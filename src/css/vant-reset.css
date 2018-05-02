@@ -1,0 +1,148 @@
+* {
+    margin: 0;
+    padding: 0;
+    color: #606266;
+}
+.van-tabbar {
+    z-index: 22;
+}
+.van-tabbar-item {
+    color: #6980AA;
+}
+.van-tabbar-item--active .van-tabbar-item__text span {
+    color: #D0021B!important;
+}
+.van-search {
+    position: fixed;
+    width: 100%;
+    top: 0;
+}
+.main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 50px;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+.main.index {
+    top: -1px;
+}
+.van-swipe-item {
+    font-size: 0;
+}
+.van-swipe-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.van-swipe__indicators .van-swipe__indicator--active {
+    background-color: #D0021B;
+}
+.van-cell__value {
+    min-width: 100px;
+}
+.van-button--bottom-action span {
+    color: #fff;
+}
+.van-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.van-submit-bar__bar .van-button__text {
+    color: #fff;
+}
+.van-search--show-action {
+    padding-right: 15px;
+}
+.van-search__action {
+    margin-left: 10px;
+}
+.van-search {
+    background-color: #fff!important;
+}
+.van-search__input,
+.van-search__input-wrap {
+    background-color: rgb(242, 242, 242);
+}
+.van-search__input-wrap {
+    border: 0;
+}
+.van-address-list__group {
+    padding-bottom: 10px;
+}
+.operationPassword,
+.loginPassword {
+    position: absolute;
+    width: 100%;
+    min-height: 100%;
+    background-color: #f7f7f7;
+    box-sizing: border-box;
+}
+.van-search {
+    padding: 10px 15px;
+}
+.van-popup.password {
+    width: 100%;
+    height: 100%;
+}
+.van-popup.password .van-password-input {
+    margin-top: 20%;
+}
+.van-icon-success,
+.van-toast__text {
+    color: #fff;
+}
+
+.setPassword-btn .van-button--default,
+.register-btn .van-button--default,
+.save-btn .van-button--default {
+    color: #fff;
+    background-color: #D0021B!important;
+    border: 1px solid #D0021B!important;
+}
+.setPassword-btn .van-button__text,
+.save-btn .van-button__text {
+    color: #fff;
+}
+.van-address-list__add .van-icon-add,
+.van-address-list .van-icon-checked {
+    color: #D0021B;
+}
+.van-notice-bar {
+    background: #fae5e8;
+}
+.van-notice-bar__content {
+    color: #D0021B!important;
+}
+.van-button--large {
+    height: 38px;
+    line-height: 38px;
+}
+.noMore {
+    font-size: 14px;
+    color: #999;
+    line-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.noMore .van-loading {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+.van-collapse-item__title .van-cell__right-icon::before {
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+}
+.van-collapse-item--expanded .van-collapse-item__title .van-cell__right-icon::before {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+.pay .van-cell__right-icon {
+    display: flex;
+    align-items: center;
+}
