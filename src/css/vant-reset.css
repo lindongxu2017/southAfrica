@@ -145,4 +145,11 @@
 .pay .van-cell__right-icon {
     display: flex;
     align-items: center;
+    color: #D0021B;
+}
+
+.pay .van-button--default {
+    color: #fff;
+    background-color: #D0021B;
+    border: 1px solid #D0021B;
 }

@@ -54,7 +54,7 @@ export default {
         }
     },
     created () {
-        this.type = this.fn.GetQueryString('type')
+        this.type = this.$route.params.type
     },
     methods: {
         onSubmit () {

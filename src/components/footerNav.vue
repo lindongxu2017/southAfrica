@@ -2,25 +2,25 @@
     <div class="footerNav">
         <van-tabbar v-model="active" v-if="showBar">
             <van-tabbar-item icon="shop" @click="routeTo('home')">
-                <span>商城</span>
+                <span v-html="$t('m.mall')">商城</span>
                 <template slot="icon" slot-scope="props">
                     <img :src="props.active ? icon.active_1 : icon.normal_1" />
                 </template>
             </van-tabbar-item>
             <van-tabbar-item icon="shop" @click="routeTo('classify')">
-                <span>分类</span>
+                <span v-html="$t('m.classification')">分类</span>
                 <template slot="icon" slot-scope="props">
                     <img :src="props.active ? icon.active_2 : icon.normal_2" />
                 </template>
             </van-tabbar-item>
             <van-tabbar-item icon="shop" @click="routeTo('shoppingCart')">
-                <span>购物车</span>
+                <span v-html="$t('m.shoppingCart')">购物车</span>
                 <template slot="icon" slot-scope="props">
                     <img :src="props.active ? icon.active_3 : icon.normal_3" />
                 </template>
             </van-tabbar-item>
             <van-tabbar-item icon="chat" @click="routeTo('center')">
-                <span>个人中心</span>
+                <span v-html="$t('m.personalCenter')">个人中心</span>
                 <template slot="icon" slot-scope="props">
                     <img :src="props.active ? icon.active_4 : icon.normal_4" />
                 </template>

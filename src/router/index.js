@@ -52,7 +52,7 @@ export default new Router({
                 { path: '/shoppingCart/:type', name: 'shoppingCart', components: { default: shoppingCart, footerNav } },
                 { path: '/classify', name: 'classify', components: { default: classify, footerNav } },
                 {path: '/goodsDetail/:id/:type', name: 'goodsDetail', components: {default: goodsDetail}},
-                {path: '/center/pvp', name: 'pvp', components: {default: pvp}},
+                {path: '/center/pvp/:type', name: 'pvp', components: {default: pvp}},
                 {path: '/center/balanceLog', name: 'balanceLog', components: {default: balanceLog}},
                 {path: '/center/cash', name: 'cash', components: {default: cash}},
                 {path: '/center/recharge', name: 'recharge', components: {default: recharge}},
