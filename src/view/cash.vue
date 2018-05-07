@@ -22,10 +22,29 @@ export default {
     name: 'cash-wrapper',
     data () {
         return {
-            value: ''
+            value: '',
+            password: ''
         }
     },
     methods: {
+        submit () {
+            this.fn.ajax('post', {price: this.value, pay_password: this.password}, this.api.center.cash, res => {
+                this.$router.back()
+            })
+        }
     }
 }
 </script>
+
+<style type="text/css">
+    .cash .cash-btn span.van-button__text {
+        color: #fff;
+    }
+</style>
+
+<style type="text/css" scoped>
+    .cash-btn .van-button {
+        background-color: #D0021B;
+        border: 1px solid #D0021B;
+    }
+</style>

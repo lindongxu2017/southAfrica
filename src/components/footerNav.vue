@@ -53,15 +53,16 @@ export default {
     },
     methods: {
         routeTo (name) {
-            this.$router.push({name})
             if (name === 'shoppingCart') {
-                this.$router.push({name: 'shoppingCart', params: {type: 0}})
+                this.$router.push({name: 'shoppingCart', params: {type: 2}})
+            } else {
+                this.$router.push({name})
             }
         },
         redirect () {
             // console.log(this.$route)
             var name = this.$route.name
-            var active = NaN
+            var active
             switch (name) {
                 case 'home':
                     active = 0

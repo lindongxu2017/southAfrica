@@ -55,15 +55,24 @@ export default {
                 require('../assets/img/parameter3.png'),
                 require('../assets/img/parameter4.png')
             ],
-            showBar: true
+            showBar: true,
+            id: '',
+            detail: {}
         }
     },
-    created () {
+    mounted () {
         if (parseInt(this.$route.params.type) === 1) {
             this.showBar = false
         }
+        this.id = this.$route.params.id
+        this.getDetail()
     },
     methods: {
+        getDetail () {
+            this.fn.ajax('get', {action: 'detail', id: this.id}, this.api.home.detail, res => {
+                this.detail = res.data
+            })
+        },
         onClickMiniBtn: function (type) {
             switch (parseInt(type)) {
                 case 1:

@@ -82,7 +82,7 @@ export default {
             // location.href = './goodsDetail.html?id=' + this.id
         },
         goAddress () {
-            this.$router.push({name: 'address'})
+            this.$router.push({name: 'addressAddorEdit'})
             // location.href = './address.html'
         },
         onSubmit () {

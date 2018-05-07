@@ -54,7 +54,7 @@ export default new Router({
                 {path: '/goodsDetail/:id/:type', name: 'goodsDetail', components: {default: goodsDetail}},
                 {path: '/center/pvp/:type', name: 'pvp', components: {default: pvp}},
                 {path: '/center/balanceLog', name: 'balanceLog', components: {default: balanceLog}},
-                {path: '/center/cash', name: 'cash', components: {default: cash}},
+                {path: '/center/cash/:type', name: 'cash', components: {default: cash}},
                 {path: '/center/recharge', name: 'recharge', components: {default: recharge}},
                 {path: '/center/transfer', name: 'transfer', components: {default: transfer}},
                 {path: '/center/bonus', name: 'bonus', components: {default: bonus}},

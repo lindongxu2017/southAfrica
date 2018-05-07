@@ -18,9 +18,11 @@
             <van-list v-model="loading" :finished="finished" @load="onLoad">
                 <van-row gutter="10" class="index-row-list">
                     <van-col span="12" v-for="(item, key) in rowlist" @click.native="router(item.id)" :key="key">
-                        <img :src="item.imgUrl">
-                        <p>商品描述文字商品描述文字商品描述文字</p>
-                        <p class="price">￥ 888.00元</p>
+                        <img :src="item.proimg">
+                        <div class="product-info">
+                            <p v-html="item.productname"></p>
+                            <p class="price" v-html="'￥' + item.price"></p>
+                        </div>
                     </van-col>
                 </van-row>
             </van-list>
@@ -36,10 +38,25 @@ export default {
         return {
             loading: false,
             finished: false,
-            rowlist: []
+            rowlist: [],
+            total: 0,
+            page: 1
         }
     },
+    mounted () {},
     methods: {
+        getlist () {
+            this.fn.ajax('get', {action: 'list', pageno: this.page}, this.api.home.list, res => {
+                this.total = res.data.total
+                this.rowlist = this.rowlist.concat(res.data.list)
+                this.loading = false
+                if (this.rowlist.length >= this.total) {
+                    this.finished = true
+                } else {
+                    this.page++
+                }
+            })
+        },
         router: function (id) {
             id = 3
             this.$router.push({name: 'goodsDetail', params: {id: id, type: 0}})
@@ -48,17 +65,19 @@ export default {
             this.$router.push({name: 'search'})
         },
         onLoad: function () {
-            var self = this
-            setTimeout(function () {
-                for (let i = 1; i < 4; i++) {
-                    self.rowlist.push({imgUrl: require('../assets/img/goods' + i + '.png')})
-                }
-                self.loading = false
-                if (self.rowlist.length >= 18) {
-                    self.finished = true
-                }
-            }, 1000)
+            this.getlist()
         }
     }
 }
 </script>
+<style type="text/css" scoped>
+    .product-info {
+        display: flex;
+        flex-wrap: wrap;
+        min-height: 70px;
+        align-content: space-between;
+    }
+    .product-info p {
+        width: 100%;
+    }
+</style>

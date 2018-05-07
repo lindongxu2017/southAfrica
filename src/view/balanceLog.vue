@@ -7,14 +7,18 @@
                 <div>金额</div>
             </div>
             <div class="table-body">
-                <div class="table-tr van-hairline--bottom" v-for="(item, index) in list" :key="index">
-                    <div class="time">
-                        <p>2018/4/26</p>&nbsp;
-                        <p>13:00:00</p>
+                <van-list v-model="loading" :finished="finished" @load="onLoad">
+                    <div class="table-tr van-hairline--bottom" v-for="(item, index) in list" :key="index">
+                        <div class="time">
+                            <p>2018/4/26</p>&nbsp;
+                            <p>13:00:00</p>
+                        </div>
+                        <div v-html="item.memo1">余额提现</div>
+                        <div v-if="item.type == 1" v-html="'￥' + item.money">￥100.00</div>
+                        <div v-else v-html="'-￥' + item.money">￥100.00</div>
                     </div>
-                    <div>余额提现</div>
-                    <div>￥100.00</div>
-                </div>
+                </van-list>
+                <p class="noMore" v-if="finished">暂无更多...</p>
             </div>
         </div>
     </div>
@@ -26,25 +30,25 @@ export default {
     data () {
         return {
             chosenAddressId: '1',
-            list: [
-                {
-                    id: '1',
-                    name: '张三',
-                    tel: '13000000000',
-                    address: '浙江省杭州市西湖区文三路 138 号东方通信大厦 7 楼 501 室'
-                },
-                {
-                    id: '2',
-                    name: '李四',
-                    tel: '1310000000',
-                    address: '浙江省杭州市拱墅区莫干山路 50 号'
-                }
-            ]
+            list: [],
+            total: 0,
+            page: 1,
+            loading: false,
+            finished: false
         }
     },
     methods: {
-        address: function (type) {
-            this.$router.push({name: 'addressAddorEdit', params: {type}})
+        onLoad: function () {
+            this.fn.ajax('get', {action: 'list', pageno: this.page}, this.api.center.balancelist, res => {
+                this.total = parseInt(res.data.total)
+                this.list = this.list.concat(res.data.list)
+                this.loading = false
+                if (this.list.length >= this.total) {
+                    this.finished = true
+                } else {
+                    this.page++
+                }
+            })
         }
     }
 }

@@ -10,6 +10,15 @@ export const m = {
     withdraw: '提现',
     recharge: '充值',
     transfer: '转账',
+    inputMoney: '请输入金额',
+    cashRates: '提现手续费',
+    cashNumber: '提现金额',
+    myMoney: '我的金额',
+    rechargeNumber: '充值金额',
+    transferNumber: '转账金额',
+    transferType: '转账类型',
+    transferObjNumber: '转入人会员编号',
+    bankCard: '银行卡',
     bonus: '奖金',
     seeMore: '查看更多',
     personalInformation: '个人信息',
@@ -54,6 +63,11 @@ export const m = {
     city: '城市',
     Address: '详细地址',
     save: '保存',
+    inputRecipientName: '请输入收件人姓名',
+    inputRecipientPhone: '请输入收件人电话',
+    inputProvinceName: '请输入省份名称',
+    inputCityName: '请输入城市名称',
+    inputAddress: '请输入详细地址',
     operating: '操作',
     newProduct: '新品推荐',
     inStock: '库存',
@@ -102,5 +116,4 @@ export const m = {
     inputconfirmPassword: '请确认新密码',
     commit: '提交',
     setSuccessTips: '已成功设置新密码'
-
 }

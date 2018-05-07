@@ -14,9 +14,10 @@
                     <div class="field-wrapper">
                         <div class="register-field">
                             <van-cell-group>
+                                <van-field v-model="register.username" :class="[register.username.length > 0 ? 'length' : '']" placeholder="请输入用户名" ></van-field>
                                 <van-field v-model="register.phone" :class="[register.phone.length > 0 ? 'length' : '']" type="number" placeholder="请输入手机号" ></van-field>
                                 <van-field v-model="register.code" :class="[register.code.length > 0 ? 'length' : '']" placeholder="请输入验证码" >
-                                    <div slot="button" v-html="$t('m.getCode')">获取</div>
+                                    <div slot="button" v-html="$t('m.getCode')" @click="getCode">获取</div>
                                 </van-field>
                             </van-cell-group>
                         </div>
@@ -29,7 +30,7 @@
                     <div class="field-wrapper">
                         <div class="register-field">
                             <van-cell-group>
-                                <van-field v-model="login.phone" :class="[login.phone.length > 0 ? 'length' : '']" type="number" placeholder="请输入手机号" ></van-field>
+                                <van-field v-model="login.username" :class="[login.username.length > 0 ? 'length' : '']" placeholder="请输入用户名" ></van-field>
                                 <van-field v-model="login.password" :class="[login.password.length > 0 ? 'length' : '']" type="password" placeholder="请输入密码" ></van-field>
                                 <p class="forgetPassword" @click="goForgetPassword">忘记密码？</p>
                             </van-cell-group>
@@ -55,15 +56,22 @@ export default {
         return {
             active: 1,
             register: {
+                username: '',
                 phone: '',
                 code: ''
             },
             login: {
-                phone: '',
+                username: '',
                 password: ''
             },
             lanActive: 1,
             lang: 'zh-CN'
+        }
+    },
+    beforeCreate () {
+        if (localStorage.userinfo) {
+            this.$router.push({name: 'home'})
+            return false
         }
     },
     mounted () {
@@ -79,10 +87,36 @@ export default {
     },
     methods: {
         goSetPassword () {
+            // if (this.register.username === '') {
+            //     alert('请输入用户名')
+            //     return false
+            // }
+            // if (this.register.phone === '') {
+            //     alert('请输入手机号')
+            //     return false
+            // }
+            // if (this.register.code === '') {
+            //     alert('请输入验证码')
+            //     return false
+            // }
+            localStorage.username = this.register.username
+            localStorage.userPhone = this.register.phone
             this.$router.push({name: 'setPassword'})
         },
+        getCode () {
+            if (!/^0?(13[0-9]|15[012356789]|17[013678]|18[0-9]|14[57])[0-9]{8}$/.test(this.register.phone)) {
+                alert('请输入正确的手机号码')
+            } else {
+                // todo
+            }
+        },
         signUp () {
-            this.$router.replace({name: 'home'})
+            this.fn.ajax('post', {username: this.login.username, password: this.login.password}, this.api.admin.login, response => {
+                localStorage.removeItem('username')
+                localStorage.removeItem('userPhone')
+                localStorage.userinfo = JSON.stringify(response.data)
+                this.$router.push({name: 'home'})
+            })
         },
         goForgetPassword () {
             this.$router.push({name: 'forgetPassword_step1'})
@@ -123,6 +157,7 @@ export default {
         padding: 0 2px;
         color: rgba(255, 255, 255, 0.7);
         font-size: 12px;
+        line-height: 16px;
     }
     .lan-swith > div.active {
         background-color: rgba(255, 255, 255, 0.7);

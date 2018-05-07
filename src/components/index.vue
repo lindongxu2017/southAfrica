@@ -16,6 +16,11 @@ export default {
             msg: 'Welcome to Your Vue.js App'
         }
     },
+    beforeCreate () {
+        if (!localStorage.userinfo) {
+            this.$router.push({name: 'register'})
+        }
+    },
     mounted () {
         if (localStorage.lang === 'en-US') {
             this.$i18n.locale = 'en-US'

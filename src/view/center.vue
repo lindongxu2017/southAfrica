@@ -8,7 +8,7 @@
         <div class="header">
             <div class="avatar"><img src="../assets/img/demo.jpg"></div>
             <div class="name">
-                <div>班长大人</div>
+                <div v-html="userinfo.nicheng || userinfo.username">班长大人</div>
                 <div>
                     <van-button size="small" class="active" @click.native="tobe('pvp', 1)">PVP</van-button>
                     <van-button size="small" @click.native="tobe('pvp', 2)">VIP</van-button>
@@ -31,23 +31,43 @@
             <van-cell-group>
                 <van-cell class="gray" :title="$t('m.balance')" :value="$t('m.flowRecords')" is-link to="center/balanceLog" ></van-cell>
             </van-cell-group>
-            <p class="balance-num">888.00</p>
+            <p class="balance-num" v-html="userinfo.price">888.00</p>
             <div class="balance van-hairline--top">
-                <div class="van-hairline--right" @click="router('cash')">{{$t('m.withdraw')}}</div>
+                <div class="van-hairline--right" @click="cash('1')">{{$t('m.withdraw')}}</div>
                 <div class="van-hairline--right" @click="router('recharge')">{{$t('m.recharge')}}</div>
                 <div @click="router('transfer')">{{$t('m.transfer')}}</div>
             </div>
         </div>
         <div class="section">
-            <van-cell-group>
+            <!-- <van-cell-group>
                 <van-cell class="gray" :title="$t('m.bonus')" :value="$t('m.seeMore')" is-link to="center/bonus"></van-cell>
-            </van-cell-group>
-            <p class="balance-num">888.00</p>
+            </van-cell-group> -->
+            <div class="bouns">
+                <div class="select-wrapper">
+                    <div v-html="$t('m.bonus')"></div>
+                    <div>
+                        <select v-model="bonusValue">
+                            <option value="1">PVP</option>
+                            <option value="2">VIP</option>
+                            <option value="3">店长</option>
+                        </select>
+                        <img src="../assets/icon/select-icon.png">
+                    </div>
+                </div>
+                <div class="seeMore" @click="seeMore">
+                    <span v-html="$t('m.seeMore')"></span>
+                    <van-icon name="arrow"></van-icon>
+                </div>
+            </div>
+            <div class="balance-num">
+                <div v-html="userinfo.j_price">888.00</div>
+                <div class="cash-bth" @click="cash('2')">提现至余额</div>
+            </div>
         </div>
-        <div class="section">
+        <div class="section links">
             <van-cell-group>
                 <van-cell :title="$t('m.personalInformation')" is-link to="center/userinfo"></van-cell>
-                <van-cell :title="$t('m.shippingAddress')" is-link to="center/address"></van-cell>
+                <van-cell :title="$t('m.shippingAddress')" is-link to="center/addressAddorEdit"></van-cell>
                 <van-collapse v-model="activeNames">
                     <van-collapse-item :title="$t('m.changePassword')" name="2">
                         <van-cell :title="$t('m.loginPassword')" is-link to="center/loginPassword"></van-cell>
@@ -58,9 +78,9 @@
                 <!-- <van-cell title="推广链接" label="www.baidu.com">
                     <img slot="right-icon" src="./icon/copy.png" class="van-cell__right-icon" width="20" height="20">
                 </van-cell> -->
-                <div class="my-van-cell">
+                <div class="my-van-cell" v-if="userinfo.tghttp">
                     <div class="label">{{$t('m.sponsoredLinks')}}</div>
-                    <div class="tips">www.baidu.com</div>
+                    <div class="tips" v-html="userinfo.tghttp">www.baidu.com</div>
                     <div class="right-btn">{{$t('m.copy')}}</div>
                 </div>
             </van-cell-group>
@@ -78,12 +98,15 @@ export default {
     name: 'center',
     data () {
         return {
+            userinfo: {},
+            bonusValue: '1',
             activeNames: ['1'],
             lanActive: 1,
             lang: 'zh-CN'
         }
     },
     mounted () {
+        this.userinfo = JSON.parse(localStorage.userinfo)
         this.lang = this.$i18n.locale
         if (this.$i18n.locale === 'en-US') {
             this.lanActive = 0
@@ -95,27 +118,30 @@ export default {
         }
     },
     methods: {
+        seeMore () {
+            this.$router.push({name: 'bonus'})
+        },
+        cash (type) {
+            this.$router.push({name: 'cash', params: {type}})
+        },
         tobe: function (name, type) {
             this.$router.push({name, params: {type}})
-            // location.href = name + '.html?type=' + type
         },
         router: function (name) {
             this.$router.push({name})
-            // location.href = name + '.html'
         },
         goOrder: function (type) {
             this.$router.push({name: 'order', params: {type}})
-            // location.href = 'order.html?type=' + type
         },
         switchLan (type) {
             this.lanActive = type
-            if (this.lang === 'en-US') {
+            if (this.lang === 'en-US' && parseInt(type) === 1) {
                 this.lang = 'zh-CN'
                 // UI框架组件国际化
                 Locale.use('zh-CN', zhCN)
                 // 存储语言设置
                 localStorage.lang = 'zh-CN'
-            } else {
+            } else if (parseInt(type) === 0) {
                 this.lang = 'en-US'
                 // UI框架组件国际化
                 Locale.use('en-US', enUS)
@@ -142,9 +168,78 @@ export default {
         padding: 0 2px;
         color: #D0021B;
         font-size: 12px;
+        line-height: 16px;
     }
     .lan-swith > div.active {
         background-color: #D0021B;
         color: #fff;
+    }
+    .bouns {
+        padding: 10px 15px;
+        line-height: 24px;
+        box-sizing: border-box;
+        font-size: 14px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .bouns .select-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
+    .bouns .select-wrapper > div:first-child {
+        color: #B0AEB0;
+        margin-right: 15px;
+    }
+    .bouns .select-wrapper > div:last-child {
+        position: relative;
+        min-width: 52px;
+        min-height: 15px;
+    }
+    .bouns .select-wrapper > div:last-child select {
+        appearance: none;
+        --webkit-appearance: none;
+        border: 0;
+        outline: none;
+        padding-right: 25px;
+        position: absolute;
+        top: 0;
+        z-index: 1;
+        background-color: transparent;
+        line-height: 15px;
+    }
+    .bouns .select-wrapper > div:last-child img {
+        position: absolute;
+        width: 20px;
+        top: -3px;
+        right: 0;
+        z-index: 0;
+    }
+    .bouns .seeMore {
+        display: flex;
+        align-items: center;
+    }
+    .bouns .seeMore i {
+        margin-left: 5px;
+        color: #D0021B;
+        font-size: 12px;
+    }
+    .section {
+        padding-top: 10px;
+    }
+    .balance-num {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .balance-num .cash-bth {
+        font-size: 12px;
+        padding: 3px 10px;
+        border: 1px solid #D0021B;
+        color: #D0021B;
+        border-radius: 25px;
+    }
+    .links .van-hairline--top::after {
+        border-top-width: 0;
     }
 </style>
