@@ -2,31 +2,28 @@
     <div class="goodsDetail">
         <div class="container goodsDtail">
             <van-swipe :autoplay="3000">
-                <van-swipe-item><img src="../assets/img/banner2.jpg"></van-swipe-item>
-                <van-swipe-item><img src="../assets/img/banner3.jpg"></van-swipe-item>
-                <van-swipe-item><img src="../assets/img/banner4.jpg"></van-swipe-item>
-                <van-swipe-item><img src="../assets/img/banner5.jpg"></van-swipe-item>
+                <van-swipe-item v-for="(item, index, key) in detail.carousel_proimg" :key="key"><img :src="item"></van-swipe-item>
             </van-swipe>
             <div class="info">
                 <div class="title">
-                    <div class="name">文字描述文字描述文字描述文字描述文字描述文字描述文字描述</div>
-                    <div class="nums">库存：66666</div>
+                    <div class="name" v-html="detail.productname">文字描述文字描述文字描述文字描述文字描述文字描述文字描述</div>
+                    <div class="nums">库存：<span v-html="detail.num"></span></div>
                 </div>
-                <div class="price">￥888888</div>
-                <div class="tips">文字描述文字描述文字描述文字描述文字</div>
+                <div class="price" v-html="'￥' + detail.price">￥888888</div>
+                <!-- <div class="tips" v-html="detail.productsn">文字描述文字描述文字描述文字描述文字</div> -->
             </div>
-            <van-tabs v-model="active" class="goods-desc" :class="[showBar ? '': 'no-padding']">
-                <van-tab title="商品详情" class="goods-img">
-                    <img v-for="(img, key) in imageList" :src="img" :key="key">
+            <van-tabs v-model="active" class="goods-desc" :class="[showBar ? '': 'no-padding']" v-if="detail.memo">
+                <van-tab title="商品详情" class="goods-img" v-html="detail.memo">
+                    <!-- <img v-for="(img, key) in imageList" :src="img" :key="key"> -->
                 </van-tab>
-                <van-tab title="商品参数" class="goods-parameter">
+                <!-- <van-tab title="商品参数" class="goods-parameter">
                     <img v-for="(img, key) in parameter" :src="img" :key="key">
-                </van-tab>
+                </van-tab> -->
             </van-tabs>
             <van-goods-action v-if="showBar">
-                <van-goods-action-mini-btn icon="cart" text="购物车" @click="onClickMiniBtn(1)"></van-goods-action-mini-btn>
+                <van-goods-action-mini-btn icon="cart" text="购物车" @click="onClickMiniBtn(1)" :info="info"></van-goods-action-mini-btn>
                 <van-goods-action-big-btn text="加入购物车" @click="onClickMiniBtn(2)"></van-goods-action-big-btn>
-                <van-goods-action-big-btn text="立即购买" @click="onClickMiniBtn(3)" primary></van-goods-action-big-btn>
+                <!-- <van-goods-action-big-btn text="立即购买" @click="onClickMiniBtn(3)" primary></van-goods-action-big-btn> -->
             </van-goods-action>
         </div>
     </div>
@@ -48,16 +45,10 @@ export default {
                 require('../assets/img/sample7.jpg'),
                 require('../assets/img/sample8.jpg')
             ],
-            parameter: [
-                require('../assets/img/parameter5.png'),
-                require('../assets/img/parameter1.png'),
-                require('../assets/img/parameter2.png'),
-                require('../assets/img/parameter3.png'),
-                require('../assets/img/parameter4.png')
-            ],
             showBar: true,
             id: '',
-            detail: {}
+            detail: {},
+            info: 0
         }
     },
     mounted () {
@@ -66,6 +57,7 @@ export default {
         }
         this.id = this.$route.params.id
         this.getDetail()
+        this.getTotal()
     },
     methods: {
         getDetail () {
@@ -73,16 +65,26 @@ export default {
                 this.detail = res.data
             })
         },
+        getTotal () {
+            this.fn.ajax('get', {}, this.api.shopping.cart, res => {
+                var total = 0
+                res.data.list.map((item, index, input) => {
+                    // console.log(item, index, input)
+                    total += parseInt(item.num)
+                })
+                this.info = total
+            })
+        },
         onClickMiniBtn: function (type) {
             switch (parseInt(type)) {
                 case 1:
-                    this.$router.push({name: 'shoppingCart', params: {type: 1}})
+                    this.$router.push({name: 'shoppingCart'})
                     break
                 case 2:
-                    alert('do something')
-                    break
-                case 3:
-                    this.$router.push({name: 'pay'})
+                    // alert('do something')
+                    this.fn.ajax('post', {num: 1, id: this.id}, this.api.shopping.joincart, res => {
+                        this.info++
+                    })
                     break
             }
         }

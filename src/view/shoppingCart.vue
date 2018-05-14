@@ -3,26 +3,30 @@
         <div class="classify">
             <div class="main-content">
                 <div class="block">
-                    <div class="class-list-item" v-for="(item, index) in goodslist" :key="index" @click="router(item.id)">
+                    <div class="class-list-item" v-for="(item, index) in goodslist" :key="index" @click="router(item.productid)">
                         <div class="class-list-item-img">
-                            <img :src="item.imgUrl">
+                            <img :src="item.proimg">
                         </div>
                         <div class="class-list-item-info">
-                            <div class="goods-name" v-html="item.title">商品名称商品名称商品名称</div>
+                            <div class="goods-name" v-html="item.productname">商品名称商品名称商品名称</div>
                             <div class="goods-info">
                                 <div class="goods-price" v-html="'￥' + item.price">￥8000.00</div>
                                 <div class="goods-buy">
-                                    <div class="num-btn minus" @click.stop="minus(item.id, index)">-</div>
+                                    <div class="num-btn minus" @click.stop="minus(item.productid, index)">-</div>
                                     <div v-html="item.num">2</div>
-                                    <div class="num-btn plus" @click.stop="plus(item.id, index)">+</div>
+                                    <div class="num-btn plus" @click.stop="plus(item.productid, index)">+</div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="noMore" v-if="goodslist.length < 1">
+                        <img src="../assets/icon/noMore.png">
+                        <p>购物车是空的 ...</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <van-submit-bar :price="total" button-text="结算" :class="[showTabbar? 'showTabbar' : '']" @submit="onSubmit"></van-submit-bar>
+        <van-submit-bar :price="total" v-if="showTabbar" button-text="结算" :class="[showTabbar? 'showTabbar' : '']" @submit="onSubmit"></van-submit-bar>
     </div>
 </template>
 
@@ -31,52 +35,85 @@ export default {
     name: 'shoppingCart',
     data () {
         return {
-            showTabbar: true,
-            goodslist: [
-                {title: '商品1名称商品1名称商品1名称商品1名称商品1名称商品1名称商品1名称商品1名称商品1名称', desc: '描述文字描述文字描述文字描述文字', num: 1, price: 100.00, imgUrl: require('../assets/img/goods1.png')},
-                {title: '商品2名称', desc: '描述文字描述文字', num: 1, price: 300.00, imgUrl: require('../assets/img/goods2.png')},
-                {title: '商品3名称', desc: '描述文字描述文字描述文字描述文字', num: 1, price: 60.00, imgUrl: require('../assets/img/goods3.png')},
-                {title: '商品4名称', desc: '描述文字', num: 2, price: 50.00, imgUrl: require('../assets/img/goods1.png')},
-                {title: '商品4名称', desc: '描述文字', num: 2, price: 50.00, imgUrl: require('../assets/img/goods2.png')},
-                {title: '商品4名称', desc: '描述文字', num: 2, price: 50.00, imgUrl: require('../assets/img/goods3.png')},
-                {title: '商品4名称', desc: '描述文字', num: 2, price: 50.00, imgUrl: require('../assets/img/goods1.png')},
-                {title: '商品4名称', desc: '描述文字', num: 2, price: 50.00, imgUrl: require('../assets/img/goods2.png')},
-                {title: '商品4名称', desc: '描述文字', num: 2, price: 50.00, imgUrl: require('../assets/img/goods3.png')}
-            ]
+            showTabbar: false,
+            goodslist: []
         }
     },
     computed: {
         total: function () {
             var sum = 0
-            this.goodslist.map(function (obj, index) {
-                sum += obj.num * obj.price
-            })
-            return sum * 100
+            if (this.goodslist.length < 1) {
+                return sum
+            } else {
+                this.goodslist.map(function (obj, index) {
+                    sum += obj.num * obj.price * 100
+                })
+            }
+            return sum
         }
     },
     mounted () {
-        if (parseInt(this.$route.params.type) === 1) {
-            this.showTabbar = false
-        }
+        // if (parseInt(this.$route.params.type) === 1) {
+        //     this.showTabbar = false
+        // }
+        this.getlist()
     },
     methods: {
+        getlist () {
+            this.fn.ajax('get', {}, this.api.shopping.cart, res => {
+                // this.detail = res.data
+                this.goodslist = res.data.list
+                if (this.goodslist.length < 1) {
+                    this.showTabbar = false
+                } else {
+                    this.showTabbar = true
+                }
+            })
+        },
         router: function (id) {
-            id = 4
             this.$router.push({name: 'goodsDetail', params: {id, type: 1}})
         },
         minus: function (id, index) {
             if (this.goodslist[index].num >= 1) {
                 this.goodslist[index].num--
+                this.cartEdit(id, this.goodslist[index].num, index)
             }
         },
         plus: function (id, index) {
-            console.log(id, index)
             this.goodslist[index].num++
+            this.cartEdit(id, this.goodslist[index].num, index)
+        },
+        cartEdit (id, num, index) {
+            this.fn.ajax('post', {action: 'editnum', id, num}, this.api.shopping.cart, res => {
+                // todo
+                if (this.goodslist[index].num === 0) {
+                    this.goodslist.splice(index, 1)
+                    this.showTabbar = false
+                }
+            })
         },
         onSubmit: function () {
-            this.$router.push({name: 'pay', params: {id: NaN}})
-            // location.href = 'pay.html'
+            this.fn.ajax('post', {action: 'order'}, this.api.order.create, res => {
+                this.$router.push({name: 'pay', params: {id: res.data.orderid, type: '1'}})
+            })
         }
     }
 }
 </script>
+
+<style type="text/css" scoped>
+    .noMore {
+        margin-top: 30%;
+        text-align: center;
+        display: block;
+    }
+    .noMore img {
+        width: 40%;
+        opacity: 0.5;
+    }
+    .noMore p {
+        font-size: 14px;
+        margin-top: 5%;
+        color: #999;
+    }
+</style>

@@ -13,11 +13,12 @@ import './css/main.css'
 import './css/vant-reset.css'
 import './css/response.css'
 
-import {fn} from './js/main.js'
 import {api} from './js/api.js'
+import {fn} from './js/main.js'
 
-Vue.prototype.fn = fn
 Vue.prototype.api = api
+window.api = api
+Vue.prototype.fn = fn
 
 Vue.config.productionTip = false
 
@@ -36,7 +37,7 @@ const i18n = new VueI18n({
 })
 
 /* eslint-disable no-new */
-new Vue({
+window.vm = new Vue({
     el: '#app',
     i18n,
     router,

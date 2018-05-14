@@ -9,11 +9,8 @@
             <div class="table-body">
                 <van-list v-model="loading" :finished="finished" @load="onLoad">
                     <div class="table-tr van-hairline--bottom" v-for="(item, index) in list" :key="index">
-                        <div class="time">
-                            <p>2018/4/26</p>&nbsp;
-                            <p>13:00:00</p>
-                        </div>
-                        <div v-html="item.memo1">余额提现</div>
+                        <div class="time" v-html="item.addtime"></div>
+                        <div v-html="item.money_name">余额提现</div>
                         <div v-if="item.type == 1" v-html="'￥' + item.money">￥100.00</div>
                         <div v-else v-html="'-￥' + item.money">￥100.00</div>
                     </div>
@@ -53,3 +50,9 @@ export default {
     }
 }
 </script>
+
+<style type="text/css">
+    .balanceLog-wrapper .noMore {
+        margin-top: 10%;
+    }
+</style>

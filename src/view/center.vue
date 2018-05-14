@@ -10,9 +10,9 @@
             <div class="name">
                 <div v-html="userinfo.nicheng || userinfo.username">班长大人</div>
                 <div>
-                    <van-button size="small" class="active" @click.native="tobe('pvp', 1)">PVP</van-button>
-                    <van-button size="small" @click.native="tobe('pvp', 2)">VIP</van-button>
-                    <van-button size="small" @click.native="tobe('pvp', 3)" v-html="$t('m.shopowner')">店长</van-button>
+                    <van-button size="small" :class="[userinfo.pvp_id == 3 ? 'active' : '']" @click.native="tobe('pvp', 1, userinfo.pvp_id)">PVP</van-button>
+                    <van-button size="small" :class="[userinfo.vip_id != 0 ? 'active' : '']" @click.native="tobe('pvp', 2, userinfo.vip_id)">VIP</van-button>
+                    <van-button size="small" :class="[userinfo.shop_id != 0 ? 'active' : '']" @click.native="tobe('pvp', 3, userinfo.shop_id)" v-html="$t('m.shopowner')">店长</van-button>
                 </div>
             </div>
         </div>
@@ -29,39 +29,21 @@
         </div>
         <div class="section">
             <van-cell-group>
-                <van-cell class="gray" :title="$t('m.balance')" :value="$t('m.flowRecords')" is-link to="center/balanceLog" ></van-cell>
+                <van-cell class="gray" :title="$t('m.bonus')" :value="$t('m.seeMore')" is-link to="center/bonus"></van-cell>
             </van-cell-group>
-            <p class="balance-num" v-html="userinfo.price">888.00</p>
+            <p class="balance-num" v-html="userinfo.j_price">888.00</p>
             <div class="balance van-hairline--top">
-                <div class="van-hairline--right" @click="cash('1')">{{$t('m.withdraw')}}</div>
-                <div class="van-hairline--right" @click="router('recharge')">{{$t('m.recharge')}}</div>
+                <div class="van-hairline--right" @click="cash" v-html="$t('m.withdraw')"></div>
                 <div @click="router('transfer')">{{$t('m.transfer')}}</div>
             </div>
         </div>
         <div class="section">
-            <!-- <van-cell-group>
-                <van-cell class="gray" :title="$t('m.bonus')" :value="$t('m.seeMore')" is-link to="center/bonus"></van-cell>
-            </van-cell-group> -->
-            <div class="bouns">
-                <div class="select-wrapper">
-                    <div v-html="$t('m.bonus')"></div>
-                    <div>
-                        <select v-model="bonusValue">
-                            <option value="1">PVP</option>
-                            <option value="2">VIP</option>
-                            <option value="3">店长</option>
-                        </select>
-                        <img src="../assets/icon/select-icon.png">
-                    </div>
-                </div>
-                <div class="seeMore" @click="seeMore">
-                    <span v-html="$t('m.seeMore')"></span>
-                    <van-icon name="arrow"></van-icon>
-                </div>
-            </div>
+            <van-cell-group>
+                <van-cell class="gray" :title="$t('m.balance')" :value="$t('m.flowRecords')" is-link to="center/balanceLog" ></van-cell>
+            </van-cell-group>
             <div class="balance-num">
-                <div v-html="userinfo.j_price">888.00</div>
-                <div class="cash-bth" @click="cash('2')">提现至余额</div>
+                <div v-html="userinfo.price">888.00</div>
+                <div class="cash-bth" @click="router('recharge')" v-html="$t('m.recharge')"></div>
             </div>
         </div>
         <div class="section links">
@@ -74,14 +56,14 @@
                         <van-cell :title="$t('m.operationPassword')" is-link to="center/operationPassword"></van-cell>
                     </van-collapse-item>
                 </van-collapse>
-                <van-cell :title="$t('m.operationLog')" is-link class="van-hairline--top" to="center/operationLog"></van-cell>
+                <!-- <van-cell :title="$t('m.operationLog')" is-link class="van-hairline--top" to="center/operationLog"></van-cell> -->
                 <!-- <van-cell title="推广链接" label="www.baidu.com">
                     <img slot="right-icon" src="./icon/copy.png" class="van-cell__right-icon" width="20" height="20">
                 </van-cell> -->
                 <div class="my-van-cell" v-if="userinfo.tghttp">
                     <div class="label">{{$t('m.sponsoredLinks')}}</div>
-                    <div class="tips" v-html="userinfo.tghttp">www.baidu.com</div>
-                    <div class="right-btn">{{$t('m.copy')}}</div>
+                    <div class="tips" id="copyTarget" v-html="userinfo.tghttp">www.baidu.com</div>
+                    <div class="right-btn" @click="copy">{{$t('m.copy')}}</div>
                 </div>
             </van-cell-group>
         </div>
@@ -99,13 +81,14 @@ export default {
     data () {
         return {
             userinfo: {},
-            bonusValue: '1',
             activeNames: ['1'],
             lanActive: 1,
             lang: 'zh-CN'
         }
     },
     mounted () {
+        localStorage.routeSave = 0
+        this.fn.getUserInfo()
         this.userinfo = JSON.parse(localStorage.userinfo)
         this.lang = this.$i18n.locale
         if (this.$i18n.locale === 'en-US') {
@@ -118,14 +101,15 @@ export default {
         }
     },
     methods: {
-        seeMore () {
-            this.$router.push({name: 'bonus'})
+        cash () {
+            this.$router.push({name: 'cash'})
         },
-        cash (type) {
-            this.$router.push({name: 'cash', params: {type}})
-        },
-        tobe: function (name, type) {
-            this.$router.push({name, params: {type}})
+        tobe: function (name, type, id) {
+            if (type === 1 && parseInt(id) === 2) {
+                this.$router.push({name: 'activePvp'})
+            } else {
+                this.$router.push({name, params: {type, id}})
+            }
         },
         router: function (name) {
             this.$router.push({name})
@@ -150,6 +134,12 @@ export default {
             }
             // i18n 国际化
             this.$i18n.locale = this.lang
+        },
+        copy () {
+            var obj = document.getElementById('copyTarget')
+            obj.textContent = this.userinfo.tghttp
+            document.execCommand('copy')
+            alert('复制成功')
         }
     }
 }

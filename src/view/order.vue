@@ -3,29 +3,31 @@
         <div class="container order">
             <van-tabs v-model="active">
                 <van-tab v-for="(item, index, key) in list" :key="key" :title="item.title">
-                    <div class="order-list">
-                        <van-list v-model="loading" :finished="finished" @load="onLoad(index)">
-                            <div class="order-item" v-for="(obj, key) in item.list" :key="key" @click="goDetail(item.id)">
+                    <div class="order-list" v-if="index == active">
+                        <van-list v-model="loading" :finished="finished" :offset="offset" @load="onLoad(index)">
+                            <div class="order-item" v-for="(obj, index1, key) in item.list" :key="key">
                                 <div class="order-num-status">
-                                    <div>订单号：<span v-html="obj.order_num"></span></div>
-                                    <div :class="{'pending-pay': obj.status == 1, 'confirm': obj.status == 2}" >
-                                        <span v-html="obj.status_msg"></span>
-                                        <img v-if="obj.status == 1" src="../assets/icon/pendingPay.png" width="16">
-                                        <img v-if="obj.status == 2" src="../assets/icon/confirm.png" width="16">
+                                    <div>订单号：<span v-html="obj.id"></span></div>
+                                    <div :class="{'pending-pay': obj.state == 0, 'confirm': obj.state == 1}" >
+                                        <span v-html="obj.state_name"></span>
+                                        <img v-if="obj.state == 0" src="../assets/icon/pendingPay.png" width="16">
+                                        <img v-if="obj.state == 1" src="../assets/icon/confirm.png" width="16">
                                     </div>
                                 </div>
-                                <div class="order-info">
-                                    <div class="order-img"><img :src="obj.goods_img"></div>
-                                    <div class="order-desc">
-                                        <div v-html="obj.goods_name">商品名称</div>
-                                        <div class="price-nums">
-                                            <div v-html="'￥' + obj.goods_price">￥168.00</div>
-                                            <div v-html="'x' + obj.goods_num"></div>
+                                <div v-for="(product, index, key) in obj.product_ist" :key="key" @click="goDetail(product.productid)">
+                                    <div class="order-info">
+                                        <div class="order-img"><img :src="product.proimg"></div>
+                                        <div class="order-desc">
+                                            <div v-html="product.productname">商品名称</div>
+                                            <div class="price-nums">
+                                                <div v-html="'￥' + product.price">￥168.00</div>
+                                                <div v-html="'x' + product.num"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="order-btn van-hairline--top pendingPay" v-if="obj.status == 1" @click.stop="goPay(item.id)">去支付</div>
-                                <div class="order-btn van-hairline--top confirm" v-if="obj.status == 2" @click.stop="goPay(item.id)">确认收货</div>
+                                <div class="order-btn van-hairline--top pendingPay" v-if="obj.state == 0" @click.stop="goPay(obj.id)">去支付</div>
+                                <div class="order-btn van-hairline--top confirm" v-if="obj.state == 1" @click.stop="comfirm(index1, obj.id)">确认收货</div>
                             </div>
                         </van-list>
                     </div>
@@ -44,7 +46,7 @@ export default {
     name: 'order-wrapper',
     data () {
         return {
-            active: '',
+            active: 0,
             // 全部
             list: [
                 { title: '所有订单', list: [] },
@@ -54,66 +56,65 @@ export default {
             ],
             loading: false,
             finished: false,
-            total: [-1, -1, -1, -1],
-            page: [1, 1, 1, 1]
+            total: [1, 1, 1, 1],
+            page: [1, 1, 1, 1],
+            offset: 100,
+            routeName: ''
         }
     },
-    created: function () {
+    mounted () {
         this.active = this.$route.params.type
+        this.tabActive = this.$route.params.type
     },
     methods: {
         getlist () {
-            if (parseInt(this.active) === 0) {
-                this.fn.ajax('get', {action: 'list', pageno: this.page[0]}, this.api.order.list, res => {
-                    this.total[0] = parseInt(res.data.total)
-                    this.list[0].list = this.list[0].list.concat(res.data.list)
-                    this.loading = false
-                    if (this.list[0].list.length >= this.total[0]) {
-                        this.finished = true
-                    } else {
-                        this.page[0]++
-                    }
-                })
-            } else {
-                var state
-                switch (parseInt(this.active)) {
-                    case 1:
-                        state = 0
-                        break
-                    default:
-                        state = this.active
-                }
-                this.fn.ajax('get', {action: 'list', state, pageno: this.page[this.active]}, this.api.order.list, res => {
-                    this.total[this.active] = parseInt(res.data.total)
-                    this.list[this.active].list = this.list[this.active].list.concat(res.data.list)
-                    if (this.list[this.active].list.length >= this.total[this.active]) {
-                        this.loading = false
-                        this.finished = true
-                    } else {
-                        this.page[this.active]++
-                    }
-                })
+            var state = ''
+            switch (parseInt(this.active)) {
+                case 0:
+                    state = ''
+                    break
+                case 1:
+                    state = 0
+                    break
+                default:
+                    state = this.active
+                    break
             }
+            // 有待优化
+            this.fn.ajax('get', {action: 'list', state, pageno: this.page[this.active]}, this.api.order.list, res => {
+                this.total[this.active] = parseInt(res.data.total)
+                this.loading = false
+                if (this.list[this.active].list.length >= this.total[this.active]) {
+                    this.finished = true
+                } else {
+                    this.list[this.active].list = this.list[this.active].list.concat(res.data.list)
+                    this.page[this.active]++
+                    if (this.list[this.active].list.length < this.total[this.active] && this.total[this.active] <= 10) {
+                        this.page[this.active] = 1
+                    }
+                }
+            })
         },
         goPay: function (id) {
-            id = 6
-            this.$router.push({name: 'pay', params: {id}})
+            this.$router.push({name: 'pay', params: {id, type: 2}})
         },
         goDetail: function (id) {
-            id = 1
-            this.$router.push({name: 'orderDetail', params: {id}})
+            this.$router.push({name: 'goodsDetail', params: {id, type: 2}})
+            // this.$router.push({name: 'orderDetail', params: {id}})
         },
-        commit: function (id) {
-            alert('确认收货')
+        comfirm: function (index, id) {
+            this.fn.ajax('get', {action: 'receive', id}, this.api.order.list, res => {
+                this.list[2].list.splice(index, 1)
+                this.active = 3
+            })
         },
         onLoad: function (index) {
-            if (parseInt(index) === parseInt(this.active)) {
-                this.getlist()
-            }
+            this.getlist()
         }
     },
     watch: {
         active: function () {
+            this.loading = false
             this.finished = false
         }
     }

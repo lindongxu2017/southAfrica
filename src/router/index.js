@@ -31,10 +31,11 @@ import order from '@/view/order'
 import orderDetail from '@/view/orderDetail'
 import pay from '@/view/pay'
 import search from '@/view/search'
+import activePvp from '@/view/activePvp'
 
 Vue.use(Router)
 
-export default new Router({
+var router = new Router({
     routes: [
         {path: '/register', name: 'register', component: register},
         {path: '/setPassword', name: 'setPassword', component: setPassword},
@@ -49,12 +50,13 @@ export default new Router({
             children: [
                 { path: '/home', name: 'home', components: { default: home, footerNav } },
                 { path: '/center', name: 'center', components: { default: center, footerNav } },
-                { path: '/shoppingCart/:type', name: 'shoppingCart', components: { default: shoppingCart, footerNav } },
+                { path: '/shoppingCart', name: 'shoppingCart', components: { default: shoppingCart, footerNav } },
                 { path: '/classify', name: 'classify', components: { default: classify, footerNav } },
                 {path: '/goodsDetail/:id/:type', name: 'goodsDetail', components: {default: goodsDetail}},
-                {path: '/center/pvp/:type', name: 'pvp', components: {default: pvp}},
+                {path: '/center/pvp/:type/:id', name: 'pvp', components: {default: pvp}},
+                {path: '/center/activePvp', name: 'activePvp', components: {default: activePvp}},
                 {path: '/center/balanceLog', name: 'balanceLog', components: {default: balanceLog}},
-                {path: '/center/cash/:type', name: 'cash', components: {default: cash}},
+                {path: '/center/cash', name: 'cash', components: {default: cash}},
                 {path: '/center/recharge', name: 'recharge', components: {default: recharge}},
                 {path: '/center/transfer', name: 'transfer', components: {default: transfer}},
                 {path: '/center/bonus', name: 'bonus', components: {default: bonus}},
@@ -66,9 +68,36 @@ export default new Router({
                 {path: '/center/operationLog', name: 'operationLog', components: {default: operationLog}},
                 {path: '/center/order/:type', name: 'order', components: {default: order}},
                 {path: '/center/orderDetail/:id', name: 'orderDetail', components: {default: orderDetail}},
-                {path: '/pay/:id', name: 'pay', components: {default: pay}},
+                {path: '/pay/:id/:type', name: 'pay', components: {default: pay}},
                 {path: '/search', name: 'search', components: {default: search}}
             ]
         }
     ]
 })
+
+var flag = false
+var routeID = [0]
+var num = 1
+
+router.beforeEach((to, from, next) => {
+    if (to.name === 'order' && from.name === 'pay' && parseInt(from.params.type) === 1) {
+        flag = true
+        localStorage.payed = 0
+    }
+    if (to.name === 'pay' && from.name === 'order' && parseInt(to.params.type) === 2) {
+        routeID[num] = parseInt(to.params.id)
+        num++
+        if (routeID[routeID.length - 1] === routeID[routeID.length - 2]) {
+            next({name: 'center'})
+        }
+        console.log(routeID)
+    }
+    if (to.name === 'pay' && flag && parseInt(to.params.type) === 1) {
+        flag = false
+        next({name: 'center'})
+    } else {
+        next()
+    }
+})
+
+export default router

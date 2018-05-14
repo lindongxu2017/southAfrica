@@ -1,6 +1,6 @@
 <template>
     <div class="footerNav">
-        <van-tabbar v-model="active" v-if="showBar">
+        <van-tabbar v-model="active">
             <van-tabbar-item icon="shop" @click="routeTo('home')">
                 <span v-html="$t('m.mall')">商城</span>
                 <template slot="icon" slot-scope="props">
@@ -44,8 +44,7 @@ export default {
                 active_3: require('../assets/icon/car-active.png'),
                 normal_4: require('../assets/icon/center.png'),
                 active_4: require('../assets/icon/center-active.png')
-            },
-            showBar: true
+            }
         }
     },
     created () {
@@ -72,15 +71,17 @@ export default {
                     break
                 case 'shoppingCart':
                     active = 2
-                    if (parseInt(this.$route.params.type) === 1) {
-                        this.showBar = false
-                    }
                     break
                 case 'center':
                     active = 3
                     break
             }
             this.active = active
+        }
+    },
+    watch: {
+        '$route': function () {
+            this.redirect()
         }
     }
 }

@@ -4,7 +4,7 @@
             <!-- 搜索记录 -->
             <div class="search-mask" v-if="logPopup">
                 <div class="search-log">
-                    <div class="clear-logs">
+                    <div class="clear-logs" v-if="loglist.length">
                         <div>最近搜索</div>
                         <div @click="clearLogs">清除</div>
                     </div>
@@ -18,14 +18,16 @@
             </div>
             <!-- 搜索结果 -->
             <div class="search-result pay" v-if="result">
-                <div class="order-cell" v-for="(item, index) in searchResult" :key="index" @click="router(item.id)">
-                    <div class="order-cell-img"><img src="../assets/img/sample7.jpg"></div>
-                    <div class="order-cell-info">
-                        <p class="goods-name">商品名称商品名称商品名称</p>
-                        <p class="goods-price">￥8000.00</p>
-                        <p class="goods-tips">提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息</p>
+                <van-list v-model="loading" :finished="finished" @load="onLoad">
+                    <div class="order-cell" v-for="(item, index) in searchResult" :key="index" @click="router(item.id)">
+                        <div class="order-cell-img"><img :src="item.proimg"></div>
+                        <div class="order-cell-info">
+                            <p class="goods-name" v-html="item.productname">商品名称商品名称商品名称</p>
+                            <p class="goods-price" v-html="'￥' + item.price">￥8000.00</p>
+                            <!-- <p class="goods-tips">提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息提示信息</p> -->
+                        </div>
                     </div>
-                </div>
+                </van-list>
             </div>
             <!-- 搜索框 -->
             <van-search v-model="value" placeholder="请输入商品名称" autofocus :show-action="logPopup || result" @focus="focus" @keyup.13="query">
@@ -45,12 +47,31 @@ export default {
             logPopup: false,
             value: '',
             loglist: [],
-            searchResult: ['', '', '', '', '', '', '', '']
+            searchResult: [],
+            page: 1,
+            total: 0,
+            loading: false,
+            finished: true
         }
     },
     methods: {
+        getlist () {
+            this.fn.ajax('get', {action: 'list', pageno: this.page, search: this.value}, this.api.home.list, res => {
+                this.total = res.data.total
+                this.searchResult = this.searchResult.concat(res.data.list)
+                this.loading = false
+                if (this.searchResult.length >= this.total) {
+                    this.finished = true
+                } else {
+                    this.page++
+                }
+            })
+        },
+        onLoad () {
+            this.getlist()
+        },
         router (id) {
-            this.$router.push({name: 'goodsDetail', params: {id}})
+            this.$router.replace({name: 'goodsDetail', params: {type: 2, id}})
         },
         logQuery (value) {
             this.value = value
@@ -76,12 +97,14 @@ export default {
                         localStorage.searchLogs = JSON.stringify(self.loglist)
                     }
                 }
+                this.getlist()
                 this.value = ''
                 this.logPopup = false
                 this.result = true
             }
         },
         cancel () {
+            this.searchResult = []
             this.logPopup = false
             this.result = false
         },
@@ -113,7 +136,26 @@ export default {
         background-color: rgb(242, 242, 242);
         border: 0;
     }
-    .searchPage-wrapper .index .search-mask {
-        top: 54px;
+    .searchPage-wrapper .search-mask {
+        padding-top: 54px;
+    }
+    .searchPage-wrapper .clear-logs {
+        display: flex;
+        padding: 10px 15px;
+        font-size: 14px;
+        justify-content: space-between;
+    }
+
+    .searchPage-wrapper .van-cell-swipe__right {
+        font-size: 12px;
+        line-height: 44px;
+        display: inline-block;
+        padding: 0 10px;
+        text-align: center;
+        background-color: red;
+    }
+
+    .searchPage-wrapper .van-cell-swipe__right span {
+        color: #fff;
     }
 </style>

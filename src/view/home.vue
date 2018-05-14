@@ -6,14 +6,9 @@
                 <span>请输入商品名称</span>
             </div>
             <van-swipe :autoplay="3000">
-                <van-swipe-item><img src="../assets/img/banner_index.png"></van-swipe-item>
-                <van-swipe-item><img src="../assets/img/banner_index.png"></van-swipe-item>
-                <van-swipe-item><img src="../assets/img/banner_index.png"></van-swipe-item>
-                <van-swipe-item><img src="../assets/img/banner_index.png"></van-swipe-item>
+                <van-swipe-item v-for="(item, index, key) in swiperlist" :key="key"><img :src="item.proimg"></van-swipe-item>
             </van-swipe>
-            <van-notice-bar
-            text="足协杯战线连续第2年上演广州德比战，上赛季半决赛上恒大以两回合5-3的总比分淘汰富力。"
-            left-icon="http://owtoeomqb.bkt.clouddn.com/notice.png" color="#D0021B"></van-notice-bar>
+            <van-notice-bar :text="notice.content" left-icon="http://owtoeomqb.bkt.clouddn.com/notice.png" color="#D0021B"></van-notice-bar>
             <van-cell-group class="cell-title"><van-cell value="新品推荐" /></van-cell-group>
             <van-list v-model="loading" :finished="finished" @load="onLoad">
                 <van-row gutter="10" class="index-row-list">
@@ -40,11 +35,25 @@ export default {
             finished: false,
             rowlist: [],
             total: 0,
-            page: 1
+            page: 1,
+            notice: {},
+            swiperlist: []
         }
     },
-    mounted () {},
+    beforeRouteEnter (to, from, next) {
+        next(vm => {
+            vm.carousel()
+        })
+    },
+    mounted () {
+        this.getNotice()
+    },
     methods: {
+        getNotice () {
+            this.fn.ajax('get', {}, this.api.notice.item, res => {
+                this.notice = res.data
+            })
+        },
         getlist () {
             this.fn.ajax('get', {action: 'list', pageno: this.page}, this.api.home.list, res => {
                 this.total = res.data.total
@@ -57,8 +66,12 @@ export default {
                 }
             })
         },
+        carousel: function () {
+            this.fn.ajax('get', {}, this.api.home.carousel, res => {
+                this.swiperlist = res.data
+            })
+        },
         router: function (id) {
-            id = 3
             this.$router.push({name: 'goodsDetail', params: {id: id, type: 0}})
         },
         goSearch: function () {
@@ -70,6 +83,11 @@ export default {
     }
 }
 </script>
+<style type="text/css">
+    .home .van-swipe__track {
+        min-height: 180px;
+    }
+</style>
 <style type="text/css" scoped>
     .product-info {
         display: flex;
