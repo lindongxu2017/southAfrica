@@ -491,7 +491,8 @@
 
 .center .header .name {
     display: flex;
-    padding-left: 25px;
+    /* padding-left: 25px; */
+    min-height: 80px;
     flex: 8;
     flex-wrap: wrap;
     align-content: space-around;
@@ -544,17 +545,20 @@
 
 .center .order-classify {
     display: flex;
-    padding: 10px 15px 25px;
+    padding: 10px 0 25px;
     justify-content: space-around;
 }
 
 .center .order-classify > div {
+    flex: 1;
     font-size: 12px;
     text-align: center;
 }
 
 .center .order-classify img {
     width: 30%;
+    height: 6vw;
+    object-fit: contain;
     margin-bottom: 5px;
 }
 
@@ -587,13 +591,27 @@
 }
 
 .center .my-van-cell > div.tips {
-    overflow: hidden;
+    overflow-x: scroll;
     padding: 0 15px;
     text-align: center;
     white-space: nowrap;
     text-overflow: ellipsis;
     color: #aaacb3;
     flex: 1;
+}
+
+.center .my-van-cell > div.tips p {
+    white-space: nowrap;
+}
+
+.center .my-van-cell > div.tips input {
+    width: 100%;
+    border: 0;
+    appearance: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-user-select: initial;
 }
 
 .center .my-van-cell > div.right-btn {
@@ -739,10 +757,16 @@
     line-height: 40px;
     text-align: center;
     color: #999;
+    padding: 5px;
 }
 
 .order .order-btn.pendingPay {
+    display: flex;
+}
+.order .order-btn.pendingPay > div {
     color: #d0021b;
+    flex: 1;
+    text-align: center; 
 }
 
 .order .order-btn.confirm {

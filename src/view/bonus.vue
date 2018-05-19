@@ -21,7 +21,7 @@
                     <van-list v-model="loading" :finished="finished" @load="onLoad">
                         <div class="table-tr van-hairline--bottom" v-for="(item, index) in list" :key="index">
                             <div class="time" v-html="item.addtime"></div>
-                            <div v-html="item.memo_name">余额提现</div>
+                            <div v-html="item.money_name">余额提现</div>
                             <div v-html="'￥' + item.money">￥100.00</div>
                         </div>
                     </van-list>

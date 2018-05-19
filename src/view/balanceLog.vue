@@ -31,12 +31,30 @@ export default {
             total: 0,
             page: 1,
             loading: false,
-            finished: false
+            finished: false,
+            type: ''
         }
+    },
+    mounted () {
+        this.type = parseInt(this.$route.params.type)
     },
     methods: {
         onLoad: function () {
-            this.fn.ajax('get', {action: 'list', pageno: this.page}, this.api.center.balancelist, res => {
+            var api = ''
+            var data = {}
+            if (this.type === 1) {
+                api = '/mobile/api/bonus.php'
+                data = {
+                    pageno: this.page
+                }
+            } else {
+                api = '/mobile/api/finance.php'
+                data = {
+                    action: 'list',
+                    pageno: this.page
+                }
+            }
+            this.fn.ajax('get', data, api, res => {
                 this.total = parseInt(res.data.total)
                 this.list = this.list.concat(res.data.list)
                 this.loading = false

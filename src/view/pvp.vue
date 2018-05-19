@@ -38,12 +38,19 @@
                 </div>
             </div>
             <div class="isPvp" v-if="isPvp">
+                <div class="cell-area">
+                    <p class="title-name">积分记录：</p>
+                    <p class="cell-value" v-for="(item, index, key) in list" :key="key">
+                        <span v-html="item.name + '：'"></span>
+                        <span v-html="item.value"></span>
+                    </p>
+                </div>
                 <van-tabs v-model="active">
-                    <van-tab title="已激活">
+                    <van-tab title="已激活下级列表">
                         <div class="pvp-list" v-if="active == 0">
                             <van-list v-model="loading" :finished="finished" @load="onLoad">
                                 <div class="pvp-list-item" v-for="(item, key) in memberlist[0]" :key="key">
-                                    <div><img src="../assets/img/demo.jpg"></div>
+                                    <!-- <div><img src="../assets/img/demo.jpg"></div> -->
                                     <div><p v-html="item.username">杰克斯派洛</p></div>
                                 </div>
                             </van-list>
@@ -53,11 +60,11 @@
                             </div>
                         </div>
                     </van-tab>
-                    <van-tab title="未激活" v-if="type == 1">
+                    <van-tab title="未激活下级列表" v-if="type == 1">
                         <div class="pvp-list" v-if="active == 1">
                             <van-list v-model="loading" :finished="finished" @load="onLoad">
                                 <div class="pvp-list-item" v-for="(item, key) in memberlist[1]" :key="key">
-                                    <div><img src="../assets/img/demo.jpg"></div>
+                                    <!-- <div><img src="../assets/img/demo.jpg"></div> -->
                                     <div><p v-html="item.username">Steven</p></div>
                                 </div>
                             </van-list>
@@ -120,7 +127,9 @@ export default {
             loading: false,
             finished: false,
             total: [1, 1],
-            page: [1, 1]
+            page: [1, 1],
+            // 积分记录
+            list: []
         }
     },
     mounted () {
@@ -133,8 +142,14 @@ export default {
             this.isPvp = true
         }
         this.getRankList()
+        this.getScore()
     },
     methods: {
+        getScore () {
+            this.fn.ajax('get', {action: 'award', category: this.type}, this.api.center.bouns, res => {
+                this.list = res.data
+            })
+        },
         onLoad: function () {
             var index = this.active
             this.fn.ajax('get', {cate: this.type, type: index, pageno: this.page[index]}, this.api.tobe.memberlist, res => {
@@ -301,6 +316,25 @@ export default {
         outline: none;
         font-size: 14px;
         padding-left: 10px;
+        position: relative;
+    }
+    .picker:before {
+        content: '';
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        top: 14px;
+        right: 15px;
+        z-index: 1;
+        background-image: url(../assets/icon/down.png);
+        background-size: contain;
+        background-color: transparent;
+    }
+    .picker img {
+        position: absolute;
+        width: 15px;
+        top: 15px;
+        right: 15px;
     }
     .noMore {
         margin-top: 30%;
@@ -315,5 +349,19 @@ export default {
         font-size: 14px;
         margin-top: 5%;
         color: #999;
+    }
+    .cell-area {
+        padding: 15px;
+        background-color: #fff;
+        margin-bottom: 10px;
+    }
+    .title-name {
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+    .cell-value {
+        font-size: 15px;
+        padding-left: 5%;
+        margin-top: 7px;
     }
 </style>

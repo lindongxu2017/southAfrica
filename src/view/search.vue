@@ -107,6 +107,7 @@ export default {
             this.searchResult = []
             this.logPopup = false
             this.result = false
+            this.$router.back()
         },
         focus () {
             if (!this.result) {

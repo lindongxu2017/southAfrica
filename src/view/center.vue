@@ -6,7 +6,7 @@
             <div :class="[lanActive == 1 ? 'active' : '' ]" @click="switchLan(1)">中文</div>
         </div>
         <div class="header">
-            <div class="avatar"><img src="../assets/img/demo.jpg"></div>
+            <!-- <div class="avatar"><img src="../assets/img/demo.jpg"></div> -->
             <div class="name">
                 <div v-html="userinfo.nicheng || userinfo.username">班长大人</div>
                 <div>
@@ -21,15 +21,31 @@
                 <van-cell title="我的订单" ></van-cell>
             </van-cell-group> -->
             <div class="order-classify">
-                <div><img src="../assets/icon/all.png" @click="goOrder(0)"><p v-html="$t('m.all')">全部订单</p></div>
-                <div><img src="../assets/icon/pending.png" @click="goOrder(1)"><p v-html="$t('m.pendingPay')">待付款</p></div>
-                <div><img src="../assets/icon/recevied.png" @click="goOrder(2)"><p v-html="$t('m.toReceive')">待收货</p></div>
+                <div><img src="../assets/icon/all.png" @click="goOrder('')"><p v-html="$t('m.all')">全部订单</p></div>
+                <div><img src="../assets/icon/pending.png" @click="goOrder(0)">
+                    <van-badge-group v-if="nums.weizhifu > 0">
+                        <van-badge :title="$t('m.pendingPay')" :info="parseInt(nums.weizhifu)"></van-badge>
+                    </van-badge-group>
+                    <p v-else v-html="$t('m.pendingPay')" info="10">待付款</p>
+                </div>
+                <div><img src="../assets/icon/pendingsend.png" @click="goOrder(1)">
+                    <van-badge-group v-if="nums.yifahuo > 0">
+                        <van-badge :title="$t('m.toSend')" :info="parseInt(nums.yizhifu)"></van-badge>
+                    </van-badge-group>
+                    <p v-else v-html="$t('m.toSend')">待发货</p>
+                </div>
+                <div><img src="../assets/icon/recevied.png" @click="goOrder(2)">
+                    <van-badge-group v-if="nums.yizhifu > 0">
+                        <van-badge :title="$t('m.toReceive')" :info="parseInt(nums.yifahuo)"></van-badge>
+                    </van-badge-group>
+                    <p v-else v-html="$t('m.toReceive')">待收货</p>
+                </div>
                 <div><img src="../assets/icon/finish.png" @click="goOrder(3)"><p v-html="$t('m.completed')">已完成</p></div>
             </div>
         </div>
         <div class="section">
             <van-cell-group>
-                <van-cell class="gray" :title="$t('m.bonus')" :value="$t('m.seeMore')" is-link to="center/bonus"></van-cell>
+                <van-cell class="gray" :title="$t('m.bonus')" :value="$t('m.seeMore')" is-link @click="golog(1)"></van-cell>
             </van-cell-group>
             <p class="balance-num" v-html="userinfo.j_price">888.00</p>
             <div class="balance van-hairline--top">
@@ -39,7 +55,7 @@
         </div>
         <div class="section">
             <van-cell-group>
-                <van-cell class="gray" :title="$t('m.balance')" :value="$t('m.flowRecords')" is-link to="center/balanceLog" ></van-cell>
+                <van-cell class="gray" :title="$t('m.balance')" :value="$t('m.flowRecords')" is-link @click="golog(2)"></van-cell>
             </van-cell-group>
             <div class="balance-num">
                 <div v-html="userinfo.price">888.00</div>
@@ -53,7 +69,7 @@
                 <van-collapse v-model="activeNames">
                     <van-collapse-item :title="$t('m.changePassword')" name="2">
                         <van-cell :title="$t('m.loginPassword')" is-link to="center/loginPassword"></van-cell>
-                        <van-cell :title="$t('m.operationPassword')" is-link to="center/operationPassword"></van-cell>
+                        <van-cell :title="$t('m.payPwd')" is-link to="center/operationPassword"></van-cell>
                     </van-collapse-item>
                 </van-collapse>
                 <!-- <van-cell :title="$t('m.operationLog')" is-link class="van-hairline--top" to="center/operationLog"></van-cell> -->
@@ -62,8 +78,12 @@
                 </van-cell> -->
                 <div class="my-van-cell" v-if="userinfo.tghttp">
                     <div class="label">{{$t('m.sponsoredLinks')}}</div>
-                    <div class="tips" id="copyTarget" v-html="userinfo.tghttp">www.baidu.com</div>
-                    <div class="right-btn" @click="copy">{{$t('m.copy')}}</div>
+                    <div class="tips" id="copyTarget">
+                        <!-- <img class="task-key-img" :alt="userinfo.tghttp" src="">
+                        <div class="task-key-shadow"></div> -->
+                        <p v-html="userinfo.tghttp"></p>
+                    </div>
+                    <!-- <div class="right-btn" @click="copy">{{$t('m.copy')}}</div> -->
                 </div>
             </van-cell-group>
         </div>
@@ -83,7 +103,8 @@ export default {
             userinfo: {},
             activeNames: ['1'],
             lanActive: 1,
-            lang: 'zh-CN'
+            lang: 'zh-CN',
+            nums: {}
         }
     },
     mounted () {
@@ -99,8 +120,15 @@ export default {
             this.lang = 'en-Us'
             this.switchLan(0)
         }
+        this.getNums()
     },
     methods: {
+        getNums () {
+            this.fn.ajax('get', {action: 'getnum'}, this.api.order.list, res => {
+                // console.log(res)
+                this.nums = res.data
+            })
+        },
         cash () {
             this.$router.push({name: 'cash'})
         },
@@ -114,8 +142,15 @@ export default {
         router: function (name) {
             this.$router.push({name})
         },
+        golog (type) {
+            this.$router.push({name: 'balanceLog', params: {type}})
+        },
         goOrder: function (type) {
-            this.$router.push({name: 'order', params: {type}})
+            var state = type
+            if (type === '') {
+                state = NaN
+            }
+            this.$router.push({name: 'order', params: {type: state}})
         },
         switchLan (type) {
             this.lanActive = type
@@ -136,14 +171,37 @@ export default {
             this.$i18n.locale = this.lang
         },
         copy () {
-            var obj = document.getElementById('copyTarget')
-            obj.textContent = this.userinfo.tghttp
-            document.execCommand('copy')
-            alert('复制成功')
+            if (window.clipboardData) {
+                window.clipboardData.setData('Text', this.userinfo.tghttp)
+                alert('复制成功')
+            } else {
+                alert('您的设备暂不支持该功能！')
+            }
         }
     }
 }
 </script>
+
+<style type="text/css">
+    .center .van-badge--select, .van-badge--select:active {
+        background-color: transparent;
+        font-weight: 500;
+        border: 0;
+        color: #606266;
+        font-size: 12px;
+        line-height: 1.2;
+        overflow: visible;
+    }
+    .center .van-badge--select::after {
+        border: 0;
+    }
+    .center .van-badge__info {
+        top: -10px
+    }
+    .center .van-badge {
+        padding: 0
+    }
+</style>
 
 <style type="text/css" scoped>
     .lan-swith {

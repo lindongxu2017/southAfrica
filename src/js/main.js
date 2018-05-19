@@ -46,6 +46,16 @@ var fn = {
                     window.vm.$router.push({name: 'register'})
                 })
                 break
+            case 99984:
+                Dialog.alert({
+                    title: '提示',
+                    message: '暂未设置收货地址,是否前往设置？'
+                }).then(() => {
+                    window.vm.$router.push({name: 'addressAddorEdit'})
+                }).catch(() => {
+                    // todo
+                })
+                break
             case 99985:
                 this.serverError(response.data.message, fn)
                 break

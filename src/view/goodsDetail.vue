@@ -1,6 +1,6 @@
 <template>
     <div class="goodsDetail">
-        <div class="container goodsDtail">
+        <div class="container goodsDtail" v-if="detail.price">
             <van-swipe :autoplay="3000">
                 <van-swipe-item v-for="(item, index, key) in detail.carousel_proimg" :key="key"><img :src="item"></van-swipe-item>
             </van-swipe>

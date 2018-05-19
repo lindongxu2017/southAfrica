@@ -2,9 +2,9 @@
     <div class="order-wrapper">
         <div class="container order">
             <van-tabs v-model="active">
-                <van-tab v-for="(item, index, key) in list" :key="key" :title="item.title">
-                    <div class="order-list" v-if="index == active">
-                        <van-list v-model="loading" :finished="finished" :offset="offset" @load="onLoad(index)">
+                <van-tab v-for="(item, indexF, key) in list" :key="key" :title="item.title">
+                    <div class="order-list" v-if="indexF == active">
+                        <van-list v-model="loading" :finished="finished" :offset="offset" @load="onLoad(indexF)">
                             <div class="order-item" v-for="(obj, index1, key) in item.list" :key="key">
                                 <div class="order-num-status">
                                     <div>订单号：<span v-html="obj.id"></span></div>
@@ -13,6 +13,12 @@
                                         <img v-if="obj.state == 0" src="../assets/icon/pendingPay.png" width="16">
                                         <img v-if="obj.state == 1" src="../assets/icon/confirm.png" width="16">
                                     </div>
+                                </div>
+                                <div class="order-num-status" v-if="obj.log_no" style="padding-top: 10px">
+                                    <div>快递单号：<span v-html="obj.log_no"></span></div>
+                                </div>
+                                <div class="order-num-status" v-if="obj.log_no" style="padding-top: 10px">
+                                    <div>物流公司：<span v-html="obj.company"></span></div>
                                 </div>
                                 <div v-for="(product, index, key) in obj.product_ist" :key="key" @click="goDetail(product.productid)">
                                     <div class="order-info">
@@ -26,12 +32,15 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="order-btn van-hairline--top pendingPay" v-if="obj.state == 0" @click.stop="goPay(obj.id)">去支付</div>
-                                <div class="order-btn van-hairline--top confirm" v-if="obj.state == 1" @click.stop="comfirm(index1, obj.id)">确认收货</div>
+                                <div class="order-btn van-hairline--top pendingPay" v-if="obj.state == 0">
+                                    <div class="van-hairline--right" @click.stop="deleteOrder(indexF, index1, obj.id)">删除订单</div>
+                                    <div @click.stop="goPay(obj.id)">支付</div>
+                                </div>
+                                <div class="order-btn van-hairline--top confirm" v-if="obj.state == 2" @click.stop="comfirm(index1, obj.id)">确认收货</div>
                             </div>
                         </van-list>
                     </div>
-                    <div class="noMore" v-if="total[index] == 0">
+                    <div class="noMore" v-if="total[indexF] == 0">
                         <img src="../assets/icon/noMore.png">
                         <p>暂无订单...</p>
                     </div>
@@ -42,6 +51,7 @@
 </template>
 
 <script>
+import { Dialog } from 'vant'
 export default {
     name: 'order-wrapper',
     data () {
@@ -51,36 +61,31 @@ export default {
             list: [
                 { title: '所有订单', list: [] },
                 { title: '待付款', list: [] },
+                { title: '待发货', list: [] },
                 { title: '待收货', list: [] },
                 { title: '已完成', list: [] }
             ],
             loading: false,
             finished: false,
-            total: [1, 1, 1, 1],
-            page: [1, 1, 1, 1],
+            total: [1, 1, 1, 1, 1],
+            page: [1, 1, 1, 1, 1],
             offset: 100,
             routeName: ''
         }
     },
     mounted () {
-        this.active = this.$route.params.type
-        this.tabActive = this.$route.params.type
+        if (this.$route.params.type !== null) {
+            this.active = this.$route.params.type + 1
+        }
     },
     methods: {
         getlist () {
-            var state = ''
-            switch (parseInt(this.active)) {
-                case 0:
-                    state = ''
-                    break
-                case 1:
-                    state = 0
-                    break
-                default:
-                    state = this.active
-                    break
+            var state = this.active
+            if (this.active === 0) {
+                state = ''
+            } else {
+                state = this.active - 1
             }
-            // 有待优化
             this.fn.ajax('get', {action: 'list', state, pageno: this.page[this.active]}, this.api.order.list, res => {
                 this.total[this.active] = parseInt(res.data.total)
                 this.loading = false
@@ -93,6 +98,20 @@ export default {
                         this.page[this.active] = 1
                     }
                 }
+            })
+        },
+        deleteOrder (index1, index2, id) {
+            Dialog.confirm({
+                title: '提示',
+                message: '是否删除订单？'
+            }).then(() => {
+                // on confirm
+                this.fn.ajax('get', {action: 'del', id}, this.api.order.list, res => {
+                    this.list[index1].list.splice(index2, 1)
+                    this.total[index1]--
+                })
+            }).catch(() => {
+                // on cancel
             })
         },
         goPay: function (id) {

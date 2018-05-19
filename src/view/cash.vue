@@ -84,7 +84,7 @@ export default {
                     } else {
                         Dialog.alert({
                             title: '提示',
-                            message: '提现成功，请等待后台审核！'
+                            message: '提交成功，请等待后台审核！'
                         }).then(() => {
                             this.$router.back()
                         })

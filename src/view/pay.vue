@@ -175,7 +175,7 @@ export default {
                         }).then(() => {
                             localStorage.payed = 1
                             this.passwordPopup = false
-                            this.$router.push({name: 'order', params: {type: 2}})
+                            this.$router.push({name: 'order', params: {type: 1}})
                         })
                     }
                 })

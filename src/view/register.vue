@@ -56,7 +56,7 @@ export default {
     name: 'register-wrapper',
     data () {
         return {
-            active: 1,
+            active: 2,
             register: {
                 username: '',
                 phone: '',
