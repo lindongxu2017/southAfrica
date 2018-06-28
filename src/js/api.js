@@ -30,14 +30,17 @@ var api = {
     shopping: {
         joincart: '/mobile/api/productview.php',
         cart: '/mobile/api/cart.php',
-        class: '/mobile/api/product.php'
+        class: '/mobile/api/product.php',
+        ratio: '/mobile/api/cart.php'
     },
     tobe: {
         pvp: '/mobile/api/pvpbuy.php',
         vip: '/mobile/api/vipbuy.php',
         store: '/mobile/api/shopbuy.php',
         ranklist: '/mobile/api/ranklist.php',
-        memberlist: '/mobile/api/mysubed.php'
+        memberlist: '/mobile/api/mysubed.php',
+        levelup: '/mobile/api/shopbuy.php',
+        agent: '/mobile/api/cart.php'
     },
     notice: {
         item: '/mobile/api/notice.php'

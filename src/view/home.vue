@@ -9,7 +9,7 @@
                 <van-swipe-item v-for="(item, index, key) in swiperlist" :key="key"><img :src="item.proimg"></van-swipe-item>
             </van-swipe>
             <van-notice-bar :text="notice.content" left-icon="http://owtoeomqb.bkt.clouddn.com/notice.png" color="#D0021B"></van-notice-bar>
-            <van-cell-group class="cell-title"><van-cell value="新品推荐" /></van-cell-group>
+            <!-- <van-cell-group class="cell-title"><van-cell value="新品推荐" /></van-cell-group> -->
             <van-list v-model="loading" :finished="finished" @load="onLoad">
                 <van-row gutter="10" class="index-row-list">
                     <van-col span="12" v-for="(item, key) in rowlist" @click.native="router(item.id)" :key="key">
@@ -47,6 +47,7 @@ export default {
     },
     mounted () {
         this.getNotice()
+        document.title = '商城首页'
     },
     methods: {
         getNotice () {

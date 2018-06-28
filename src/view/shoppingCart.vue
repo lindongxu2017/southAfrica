@@ -27,6 +27,9 @@
             </div>
         </div>
         <van-submit-bar :price="total" v-if="showTabbar" button-text="结算" :class="[showTabbar? 'showTabbar' : '']" @submit="onSubmit"></van-submit-bar>
+        <van-popup v-model="popupVisibility" position="bottom">
+            <van-picker :columns="columns" value-key="realname" show-toolbar title="选择代理商" @cancel="onCancel" @confirm="onConfirm" @change="onChange" />
+        </van-popup>
     </div>
 </template>
 
@@ -36,7 +39,10 @@ export default {
     data () {
         return {
             showTabbar: false,
-            goodslist: []
+            popupVisibility: false,
+            agentID: '',
+            goodslist: [],
+            columns: []
         }
     },
     computed: {
@@ -57,8 +63,28 @@ export default {
         //     this.showTabbar = false
         // }
         this.getlist()
+        this.getAgentlist()
+        document.title = '购物车'
     },
     methods: {
+        getAgentlist () {
+            this.fn.ajax('post', {action: 'agentlist'}, this.api.shopping.cart, res => {
+                this.columns = this.columns.concat(res.data)
+            })
+        },
+        onCancel () {
+            this.popupVisibility = false
+        },
+        onConfirm (value, index) {
+            this.agentID = value.id
+            this.popupVisibility = false
+            this.fn.ajax('post', {action: 'order', agentid: this.agentID}, this.api.order.create, res => {
+                this.$router.push({name: 'pay', params: {id: res.data.orderid, type: '1'}})
+            })
+        },
+        onChange (picker, values) {
+            this.agentID = values.id
+        },
         getlist () {
             this.fn.ajax('get', {}, this.api.shopping.cart, res => {
                 // this.detail = res.data
@@ -93,9 +119,7 @@ export default {
             })
         },
         onSubmit: function () {
-            this.fn.ajax('post', {action: 'order'}, this.api.order.create, res => {
-                this.$router.push({name: 'pay', params: {id: res.data.orderid, type: '1'}})
-            })
+            this.popupVisibility = true
         }
     }
 }

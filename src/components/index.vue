@@ -19,6 +19,7 @@ export default {
     beforeCreate () {
         if (!localStorage.userinfo) {
             this.$router.push({name: 'register'})
+            return false
         }
     },
     mounted () {

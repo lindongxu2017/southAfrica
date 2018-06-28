@@ -52,6 +52,7 @@ export default {
         this.addressInfo.province = userinfo.province
         this.addressInfo.city = userinfo.city
         this.addressInfo.more = userinfo.address
+        document.title = '收货地址'
     },
     methods: {
         getProvince () {

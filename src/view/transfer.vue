@@ -19,7 +19,7 @@
                 <input type="text" v-model="account">
             </div>
             <div class="cash-balance">
-                <div class="cell-title">我的积分</div>
+                <div class="cell-title">我的余额</div>
                 <div class="nums" v-html="total">888.88</div>
             </div>
             <div class="cash-btn">
@@ -44,6 +44,7 @@ export default {
     mounted () {
         var userinfo = JSON.parse(localStorage.userinfo)
         this.total = userinfo.j_price
+        document.title = '转账'
     },
     methods: {
         submit () {

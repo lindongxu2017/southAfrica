@@ -32,6 +32,7 @@ import orderDetail from '@/view/orderDetail'
 import pay from '@/view/pay'
 import search from '@/view/search'
 import activePvp from '@/view/activePvp'
+import status from '@/view/status'
 
 Vue.use(Router)
 
@@ -46,7 +47,7 @@ var router = new Router({
             path: '/',
             name: 'index',
             component: index,
-            redirect: '/register',
+            redirect: '/home',
             children: [
                 { path: '/home', name: 'home', components: { default: home, footerNav } },
                 { path: '/center', name: 'center', components: { default: center, footerNav } },
@@ -55,6 +56,7 @@ var router = new Router({
                 {path: '/goodsDetail/:id/:type', name: 'goodsDetail', components: {default: goodsDetail}},
                 {path: '/center/pvp/:type/:id', name: 'pvp', components: {default: pvp}},
                 {path: '/center/activePvp', name: 'activePvp', components: {default: activePvp}},
+                {path: '/center/status', name: 'status', components: {default: status}},
                 {path: '/center/balanceLog/:type', name: 'balanceLog', components: {default: balanceLog}},
                 {path: '/center/cash', name: 'cash', components: {default: cash}},
                 {path: '/center/recharge', name: 'recharge', components: {default: recharge}},
@@ -75,29 +77,29 @@ var router = new Router({
     ]
 })
 
-var flag = false
-var routeID = [0]
-var num = 1
+// var flag = false
+// var routeID = [0]
+// var num = 1
 
-router.beforeEach((to, from, next) => {
-    if (to.name === 'order' && from.name === 'pay' && parseInt(from.params.type) === 1) {
-        flag = true
-        localStorage.payed = 0
-    }
-    if (to.name === 'pay' && from.name === 'order' && parseInt(to.params.type) === 2) {
-        routeID[num] = parseInt(to.params.id)
-        num++
-        if (routeID[routeID.length - 1] === routeID[routeID.length - 2]) {
-            next({name: 'center'})
-        }
-        console.log(routeID)
-    }
-    if (to.name === 'pay' && flag && parseInt(to.params.type) === 1) {
-        flag = false
-        next({name: 'center'})
-    } else {
-        next()
-    }
-})
+// router.beforeEach((to, from, next) => {
+//     if (to.name === 'order' && from.name === 'pay' && parseInt(from.params.type) === 1) {
+//         flag = true
+//         localStorage.payed = 0
+//     }
+//     if (to.name === 'pay' && from.name === 'order' && parseInt(to.params.type) === 2) {
+//         routeID[num] = parseInt(to.params.id)
+//         num++
+//         if (routeID[routeID.length - 1] === routeID[routeID.length - 2]) {
+//             next({name: 'center'})
+//         }
+//         console.log(routeID)
+//     }
+//     if (to.name === 'pay' && flag && parseInt(to.params.type) === 1) {
+//         flag = false
+//         next({name: 'center'})
+//     } else {
+//         next()
+//     }
+// })
 
 export default router

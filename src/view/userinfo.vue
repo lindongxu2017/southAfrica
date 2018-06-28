@@ -13,8 +13,15 @@
             <van-cell-group>
                 <van-cell title="用户名" :value="userinfo.username"></van-cell>
                 <van-cell title="注册时间" :value="userinfo.regtime"></van-cell>
-                <van-cell title="推荐人" :value="userinfo.tjrname || '无'"></van-cell>
-                <van-cell title="接点人" :value="userinfo.prename || '无'"></van-cell>
+
+                <van-cell title="PVP推荐人" :value="userinfo.tjrname || '无'"></van-cell>
+                <van-cell title="PVP接点人" :value="userinfo.prename || '无'"></van-cell>
+
+                <van-cell title="VIP推荐人" :value="userinfo.vip_tjrname || '无'"></van-cell>
+                <van-cell title="VIP接点人" :value="userinfo.vip_prename || '无'"></van-cell>
+
+                <van-cell title="商城推荐人" :value="userinfo.shop_tjrname || '无'"></van-cell>
+
                 <van-cell title="位置" :value="address"></van-cell>
                 <!-- <van-cell title="报单中心" value="xxx中心"></van-cell> -->
             </van-cell-group>
@@ -34,6 +41,7 @@ export default {
     mounted () {
         this.userinfo = JSON.parse(localStorage.userinfo)
         this.address = this.userinfo.province_name + this.userinfo.city_name + this.userinfo.address
+        document.title = '个人信息'
     }
 }
 </script>

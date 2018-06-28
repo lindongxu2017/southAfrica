@@ -37,6 +37,11 @@ export default {
     },
     mounted () {
         this.type = parseInt(this.$route.params.type)
+        if (this.type === 1) {
+            document.title = '余额明细'
+        } else {
+            document.title = '消费明细'
+        }
     },
     methods: {
         onLoad: function () {

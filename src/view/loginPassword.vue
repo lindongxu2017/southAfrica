@@ -32,6 +32,7 @@ export default {
     },
     mounted () {
         // this.password = this.repassword = JSON.parse(localStorage.userinfo).pwd
+        document.title = '设置密码'
     },
     methods: {
         setPassword () {

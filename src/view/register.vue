@@ -71,10 +71,19 @@ export default {
             lang: 'zh-CN'
         }
     },
-    beforeCreate () {
-        if (localStorage.userinfo) {
-            this.$router.push({name: 'home'})
-            return false
+    // beforeCreate () {
+    //     if (localStorage.userinfo) {
+    //         this.$router.push({name: 'home'})
+    //         return false
+    //     }
+    // },
+    watch: {
+        active: function () {
+            if (this.active === 1) {
+                document.title = '注册'
+            } else {
+                document.title = '登录'
+            }
         }
     },
     mounted () {
@@ -87,6 +96,7 @@ export default {
             this.lang = 'en-Us'
             this.switchLan(0)
         }
+        document.title = '登录'
     },
     methods: {
         goSetPassword () {

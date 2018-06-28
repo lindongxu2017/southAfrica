@@ -77,6 +77,7 @@ export default {
         if (this.$route.params.type !== null) {
             this.active = this.$route.params.type + 1
         }
+        document.title = '订单列表'
     },
     methods: {
         getlist () {
@@ -123,8 +124,8 @@ export default {
         },
         comfirm: function (index, id) {
             this.fn.ajax('get', {action: 'receive', id}, this.api.order.list, res => {
-                this.list[2].list.splice(index, 1)
-                this.active = 3
+                this.list[3].list.splice(index, 1)
+                this.active = 4
             })
         },
         onLoad: function (index) {

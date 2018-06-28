@@ -12,7 +12,7 @@
                 <div>
                     <van-button size="small" :class="[userinfo.pvp_id == 3 ? 'active' : '']" @click.native="tobe('pvp', 1, userinfo.pvp_id)">PVP</van-button>
                     <van-button size="small" :class="[userinfo.vip_id != 0 ? 'active' : '']" @click.native="tobe('pvp', 2, userinfo.vip_id)">VIP</van-button>
-                    <van-button size="small" :class="[userinfo.shop_id != 0 ? 'active' : '']" @click.native="tobe('pvp', 3, userinfo.shop_id)" v-html="$t('m.shopowner')">店长</van-button>
+                    <van-button size="small" :class="[userinfo.shop_status_id == 1 ? 'active' : '']" @click.native="tobe('pvp', 3, userinfo.shop_status_id)" v-html="$t('m.shopowner')">商城会员</van-button>
                 </div>
             </div>
         </div>
@@ -21,31 +21,31 @@
                 <van-cell title="我的订单" ></van-cell>
             </van-cell-group> -->
             <div class="order-classify">
-                <div><img src="../assets/icon/all.png" @click="goOrder('')"><p v-html="$t('m.all')">全部订单</p></div>
-                <div><img src="../assets/icon/pending.png" @click="goOrder(0)">
-                    <van-badge-group v-if="nums.weizhifu > 0">
+                <div @click="goOrder('')"><img src="../assets/icon/all.png"><p v-html="$t('m.all')">全部订单</p></div>
+                <div @click="goOrder(0)"><img src="../assets/icon/pending.png">
+                    <van-badge-group v-if="parseInt(nums.weizhifu) > 0">
                         <van-badge :title="$t('m.pendingPay')" :info="parseInt(nums.weizhifu)"></van-badge>
                     </van-badge-group>
                     <p v-else v-html="$t('m.pendingPay')" info="10">待付款</p>
                 </div>
-                <div><img src="../assets/icon/pendingsend.png" @click="goOrder(1)">
-                    <van-badge-group v-if="nums.yifahuo > 0">
+                <div @click="goOrder(1)"><img src="../assets/icon/pendingsend.png">
+                    <van-badge-group v-if="parseInt(nums.yizhifu) > 0">
                         <van-badge :title="$t('m.toSend')" :info="parseInt(nums.yizhifu)"></van-badge>
                     </van-badge-group>
                     <p v-else v-html="$t('m.toSend')">待发货</p>
                 </div>
-                <div><img src="../assets/icon/recevied.png" @click="goOrder(2)">
-                    <van-badge-group v-if="nums.yizhifu > 0">
+                <div @click="goOrder(2)"><img src="../assets/icon/recevied.png">
+                    <van-badge-group v-if="parseInt(nums.yifahuo) > 0">
                         <van-badge :title="$t('m.toReceive')" :info="parseInt(nums.yifahuo)"></van-badge>
                     </van-badge-group>
                     <p v-else v-html="$t('m.toReceive')">待收货</p>
                 </div>
-                <div><img src="../assets/icon/finish.png" @click="goOrder(3)"><p v-html="$t('m.completed')">已完成</p></div>
+                <div @click="goOrder(3)"><img src="../assets/icon/finish.png"><p v-html="$t('m.completed')">已完成</p></div>
             </div>
         </div>
         <div class="section">
             <van-cell-group>
-                <van-cell class="gray" :title="$t('m.bonus')" :value="$t('m.seeMore')" is-link @click="golog(1)"></van-cell>
+                <!-- <van-cell class="gray" :title="$t('m.bonus')" :value="$t('m.seeMore')" is-link @click="golog(1)"></van-cell> -->
             </van-cell-group>
             <p class="balance-num" v-html="userinfo.j_price">888.00</p>
             <div class="balance van-hairline--top">
@@ -121,12 +121,13 @@ export default {
             this.switchLan(0)
         }
         this.getNums()
+        document.title = '个人中心'
     },
     methods: {
         getNums () {
             this.fn.ajax('get', {action: 'getnum'}, this.api.order.list, res => {
-                // console.log(res)
                 this.nums = res.data
+                // console.log(this.nums)
             })
         },
         cash () {
@@ -135,6 +136,12 @@ export default {
         tobe: function (name, type, id) {
             if (type === 1 && parseInt(id) === 2) {
                 this.$router.push({name: 'activePvp'})
+            } else if (type === 3) {
+                if (id === 2 || id === 3) {
+                    this.$router.push({name: 'status', params: {type, id}})
+                } else {
+                    this.$router.push({name, params: {type, id}})
+                }
             } else {
                 this.$router.push({name, params: {type, id}})
             }
@@ -200,6 +207,9 @@ export default {
     }
     .center .van-badge {
         padding: 0
+    }
+    .center .van-badge-group {
+        width: auto;
     }
 </style>
 

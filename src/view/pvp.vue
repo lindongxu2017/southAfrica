@@ -29,8 +29,20 @@
                             <option v-for="(item, index, key) in rankList" :value="item.id" :key="key" v-html="item.rank_name"></option>
                         </select>
                     </div>
+                    <div class="picker van-cell van-hairline--bottom">
+                        <label>报单产品</label>
+                        <select v-model="form.productid" @change="getRankPrice">
+                            <option v-for="(item, index, key) in baodanlist" :value="item.id" :key="key" v-html="item.productname"></option>
+                        </select>
+                    </div>
+                    <div class="picker van-cell van-hairline--bottom">
+                        <label>代理商</label>
+                        <select v-model="form.agentid" @change="checkAgentid">
+                            <option v-for="(item, index, key) in agentlist" :value="item.id" :key="key" v-html="item.username"></option>
+                        </select>
+                    </div>
                 </van-cell-group>
-                <van-submit-bar v-if="type != 1" :price="form.rankPrice" button-text="支付" @submit="onSubmit"/>
+                <van-submit-bar v-if="type != 1" :price="form.rankPrice" :button-text="isShopkeeper?'提交':'支付'" @submit="onSubmit"/>
                 <div class="addressAdd" v-if="type == 1">
                     <div class="save-btn">
                         <van-button type="default" size="large" @click="save">注册会员</van-button>
@@ -39,7 +51,12 @@
             </div>
             <div class="isPvp" v-if="isPvp">
                 <div class="cell-area">
-                    <p class="title-name">积分记录：</p>
+                    <p class="cell-value level">
+                        <span v-if="type==2">会员等级： {{vip_level}} </span>
+                        <span v-if="type==3">会员等级： {{store_level}} </span>
+                        <img v-if="is_level" @click.stop="levelup" src="../assets/icon/levelup.png">
+                    </p>
+                    <!-- <p class="title-name">余额记录：</p> -->
                     <p class="cell-value" v-for="(item, index, key) in list" :key="key">
                         <span v-html="item.name + '：'"></span>
                         <span v-html="item.value"></span>
@@ -96,7 +113,9 @@ export default {
                 vip_tjrname: '',
                 vip_prename: '',
                 rank: '',
-                rankPrice: 0
+                rankPrice: 0,
+                productid: '',
+                agentid: ''
             },
             // pvp会员表单
             pvp: {
@@ -109,6 +128,7 @@ export default {
                 bank: '',
                 zhanghao: '',
                 huzhu: ''
+                // productid: ''
             },
             // 会员类型
             type: '',
@@ -128,23 +148,71 @@ export default {
             finished: false,
             total: [1, 1],
             page: [1, 1],
-            // 积分记录
-            list: []
+            // 余额记录
+            list: [],
+            // 报单产品
+            baodanlist: [],
+            // 当前等级
+            vip_level: '',
+            store_level: '',
+            // 是否可升级
+            is_level: false,
+            // 个人信息
+            userinfo: '',
+            // 是否为店长
+            isShopkeeper: false,
+            // 代理商列表
+            agentlist: []
         }
     },
     mounted () {
         this.type = parseInt(this.$route.params.type)
         var routeID = parseInt(this.$route.params.id)
-        if (routeID !== 0 && (this.type === 2 || this.type === 3)) {
+        if (this.type === 1 && routeID === 3) {
             this.isPvp = true
         }
-        if (this.type === 1 && routeID === 3) {
+        if (this.type === 2 && routeID !== 0) {
+            this.isPvp = true
+        }
+        if (this.type === 3 && routeID === 1) {
             this.isPvp = true
         }
         this.getRankList()
         this.getScore()
+        this.getlevel()
+        if (this.type === 3 && this.userinfo.is_shopkeeper === 0) {
+            this.is_level = true
+        }
+        var title = ''
+        switch (this.type) {
+            case 1:
+                title = 'PVP'
+                break
+            case 2:
+                title = 'VIP'
+                break
+            case 3:
+                title = '商城会员'
+                break
+        }
+        document.title = title
+        this.getAgentlist()
     },
     methods: {
+        getlevel () {
+            this.userinfo = JSON.parse(localStorage.userinfo)
+            this.vip_level = this.userinfo.vip_rank_name
+            this.store_level = this.userinfo.shop_rank_name
+        },
+        levelup () {
+            this.fn.ajax('get', {action: 'upgrade'}, this.api.tobe.levelup, res => {
+                this.is_level = false
+                this.fn.getUserInfo()
+                setTimeout(() => {
+                    this.getlevel()
+                }, 1000)
+            })
+        },
         getScore () {
             this.fn.ajax('get', {action: 'award', category: this.type}, this.api.center.bouns, res => {
                 this.list = res.data
@@ -164,7 +232,29 @@ export default {
             })
         },
         onSubmit () {
-            this.passwordPopup = true
+            if (this.isShopkeeper) {
+                if (this.form.vip_tjrname === '') {
+                    Dialog.alert({ title: '提示', message: '推荐人不能为空' }).then(() => {})
+                    return false
+                }
+                this.fn.ajax('POST', {
+                    shop_tjrname: this.form.vip_tjrname,
+                    shop_rank: this.form.rank
+                }, this.api.tobe.store, res => {
+                    if (res === 'error') {
+                        // todo
+                    } else {
+                        Dialog.alert({
+                            title: '提示',
+                            message: '提交成功，请等待审核结果！'
+                        }).then(() => {
+                            this.$router.back()
+                        })
+                    }
+                })
+            } else {
+                this.passwordPopup = true
+            }
         },
         onInput (key) {
             this.password = (this.password + key).slice(0, 6)
@@ -177,6 +267,8 @@ export default {
             data.tjrname = this.form.vip_tjrname
             data.prename = this.form.vip_prename
             data.rank = this.form.rank
+            data.agentid = this.form.agentid
+            data.productid = this.form.productid
             data.action = 'reg'
             this.fn.ajax('post', data, this.api.tobe.pvp, res => {
                 this.fn.getUserInfo()
@@ -199,13 +291,34 @@ export default {
             this.fn.ajax('get', {action: rankType}, this.api.tobe.ranklist, res => {
                 this.rankList = res.data
                 this.form.rank = this.rankList[0].id
-                if (this.type === 1) return
+                // if (this.type === 1) return
                 this.getRankPrice()
+                this.getBaodanlist()
+            })
+        },
+        getBaodanlist () {
+            this.fn.ajax('post', {action: 'baodanList'}, this.api.tobe.vip, res => {
+                // console.log(res)
+                this.baodanlist = res.data
+                this.form.productid = this.baodanlist[0].id
+                // if (this.type === 1) return
+                // this.getRankPrice()
+            })
+        },
+        getAgentlist () {
+            var self = this
+            this.fn.ajax('post', {action: 'agentlist'}, this.api.tobe.agent, res => {
+                console.log(res)
+                self.agentlist = res.data
+                self.form.agentid = parseInt(self.agentlist[0].id)
             })
         },
         getRankPrice () {
             var action = ''
             switch (this.type) {
+                case 1:
+                    action = 'pvp_rank_money'
+                    break
                 case 2:
                     action = 'vip_rank_money'
                     break
@@ -216,9 +329,21 @@ export default {
             this.fn.ajax('get', {action, id: this.form.rank}, this.api.tobe.ranklist, res => {
                 this.form.rankPrice = res.data.price * 100
             })
+        },
+        checkAgentid () {
+            console.log(this.form.agentid)
         }
     },
     watch: {
+        'form.rank': function () {
+            var bool = false
+            this.rankList.forEach((item, index) => {
+                if (parseInt(this.form.rank) === parseInt(item.id) && parseInt(item.is_shopkeeper) === 1) {
+                    bool = true
+                }
+            })
+            this.isShopkeeper = bool
+        },
         active: function () {
             this.loading = false
             this.finished = false
@@ -230,9 +355,10 @@ export default {
                 case 2:
                     data = {
                         vip_tjrname: this.form.vip_tjrname,
-                        vip_prename: this.form.vip_tjrname,
+                        vip_prename: this.form.vip_prename,
                         vip_rank: this.form.rank,
-                        pwd1: this.password
+                        pwd1: this.password,
+                        productid: this.form.productid
                     }
                     api = this.api.tobe.vip
                     break
@@ -240,11 +366,13 @@ export default {
                     data = {
                         shop_tjrname: this.form.vip_tjrname,
                         shop_rank: this.form.rank,
-                        pwd1: this.password
+                        pwd1: this.password,
+                        productid: this.form.productid
                     }
                     api = this.api.tobe.store
                     break
             }
+            data.agentid = this.form.agentid
             if (this.password.length === 6) {
                 this.fn.ajax('POST', data, api, res => {
                     if (res === 'error') {
@@ -255,9 +383,15 @@ export default {
                             title: '提示',
                             message: '支付成功！'
                         }).then(() => {
+                            if (this.type === 3) {
+                                this.$router.replace({name: 'status', params: {type: 3}})
+                            }
                             this.isPvp = true
                             this.passwordPopup = false
                             this.fn.getUserInfo()
+                            setTimeout(() => {
+                                this.getlevel()
+                            }, 1000)
                         })
                     }
                 })
@@ -363,5 +497,15 @@ export default {
         font-size: 15px;
         padding-left: 5%;
         margin-top: 7px;
+    }
+    .cell-value.level {
+        line-height: 1;
+    }
+    .cell-value.level span {
+        vertical-align: middle;
+    }
+    .cell-value.level img {
+        width: 20px;
+        vertical-align: middle;
     }
 </style>

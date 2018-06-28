@@ -1,13 +1,35 @@
 <template>
     <div class="recharge-wrapper">
         <div class="container cash recharge">
-            <div class="field-control">
+            <!-- <div class="field-control">
                 <div><input type="number" v-model="value" placeholder="请输入金额"></div>
                 <div>充值金额</div>
+            </div> -->
+            <van-field v-model="value" label="充值金额" icon="clear" placeholder="请输入充值金额" @click-icon="value = ''"></van-field>
+            <div class="picker van-cell van-hairline--bottom" @change="change">
+                <label>支付方式</label>
+                <select v-model="bankinfo.type">
+                    <option v-for="(item, index, key) in paylist" :value="item.id" :key="key" v-html="item.name"></option>
+                </select>
             </div>
+            <div class="picker van-cell van-hairline--bottom" v-if="bankinfo.type == 1" @change="change">
+                <label>存款日期</label>
+                <div v-html="date" @click="show = true"></div>
+            </div>
+            <div class="picker van-cell van-hairline--bottom" v-if="bankinfo.type == 1" @change="change">
+                <label>银行名称</label>
+                <select v-model="bankinfo.bankId">
+                    <option v-for="(item, index, key) in bacnklist" :value="item.id" :key="key" v-html="item.bank"></option>
+                </select>
+            </div>
+            <van-field v-model="bankAccount" label="银行账号" icon="clear" placeholder="请输入银行账号" @click-icon="value = ''"></van-field>
+            <van-field v-model="mask" label="备注" icon="clear" placeholder="请输入充值备注" @click-icon="value = ''"></van-field>
             <div class="cash-btn">
                 <van-button type="default" size="large" @click="submit">充值</van-button>
             </div>
+            <van-popup v-model="show" position="bottom">
+                <van-datetime-picker v-model="currentDate" @cancel="onCancel" @confirm="onConfirm" type="date"></van-datetime-picker>
+            </van-popup>
         </div>
         <!-- 输入密码 -->
         <van-popup v-model="passwordPopup" position="right" class="password">
@@ -26,7 +48,28 @@ export default {
             value: '',
             password: '',
             showKeyboard: true,
-            passwordPopup: false
+            passwordPopup: false,
+            bankinfo: {
+                type: 0,
+                bankId: 0
+            },
+            show: false,
+            currentDate: new Date(),
+            paylist: [],
+            bacnklist: [],
+            mask: '',
+            bankAccount: ''
+        }
+    },
+    mounted () {
+        document.title = '充值'
+        this.getPayType()
+        this.getBankList()
+    },
+    computed: {
+        date: function () {
+            var curDate = this.currentDate
+            return curDate.getFullYear() + '-' + (curDate.getMonth() + 1) + '-' + curDate.getDate()
         }
     },
     methods: {
@@ -35,7 +78,18 @@ export default {
                 Dialog.alert({ title: '提示', message: '请输入金额！' }).then(() => {})
                 return false
             }
-            this.fn.ajax('post', {price: this.value}, this.api.center.recharge, res => {
+            if (this.bankAccount === '') {
+                Dialog.alert({ title: '提示', message: '请输入银行账号！' }).then(() => {})
+                return false
+            }
+            this.fn.ajax('post', {
+                price: this.value,
+                pay_type: this.bankinfo.type,
+                bankid: this.bankinfo.bankId,
+                hktime: this.date,
+                memo: this.mask,
+                bank_zhanghao: this.bankAccount
+            }, this.api.center.recharge, res => {
                 Dialog.alert({
                     title: '提示',
                     message: res.message
@@ -45,18 +99,50 @@ export default {
             })
             // this.passwordPopup = true
         },
+        getPayType () {
+            this.fn.ajax('post', {action: 'get_pay_type'}, this.api.center.recharge, res => {
+                this.paylist = res.data
+                this.paylist.map((item, index) => {
+                    if (item.type === 1) {
+                        this.bankinfo.type = item.id
+                    }
+                })
+            })
+        },
+        getBankList () {
+            this.fn.ajax('get', {action: 'banklist'}, this.api.tobe.pvp, res => {
+                this.bacnklist = res.data
+                if (this.bacnklist.length > 0) {
+                    this.bankinfo.bankId = this.bacnklist[0].id
+                }
+            })
+        },
         onInput (key) {
             this.password = (this.password + key).slice(0, 6)
         },
         onDelete () {
             this.password = this.password.slice(0, this.password.length - 1)
+        },
+        change () {},
+        onCancel () {
+            this.show = false
+        },
+        onConfirm (value) {
+            this.show = false
         }
     },
     watch: {
         password: function () {
             if (this.password.length === 6) {
                 // this.fn.ajax('post', {price: this.value, pay_password: this.password}, this.api.center.recharge, res => {
-                this.fn.ajax('post', {price: this.value}, this.api.center.recharge, res => {
+                this.fn.ajax('post', {
+                    price: this.value,
+                    pay_type: this.bankinfo.type,
+                    bankid: this.bankinfo.bankId,
+                    hktime: this.date,
+                    memo: this.mask,
+                    bank_zhanghao: this.bankAccount
+                }, this.api.center.recharge, res => {
                     this.$toast.success('充值成功')
                     this.$router.back()
                 })
@@ -76,5 +162,31 @@ export default {
     .cash-btn .van-button {
         background-color: #D0021B;
         border: 1px solid #D0021B;
+    }
+    .picker {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        padding: 10px 15px;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        line-height: 24px;
+        position: relative;
+        background-color: #fff;
+        color: #333;
+        font-size: 14px;
+        overflow: hidden;
+    }
+    .picker label {
+        max-width: 90px;
+        flex: 1;
+    }
+    .picker select {
+        flex: 1;
+        width: 100%;
+        appearance: none;
+        border: 0;
+        outline: none;
+        font-size: 14px;
     }
 </style>

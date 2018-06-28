@@ -54,6 +54,9 @@ export default {
             finished: true
         }
     },
+    mounted () {
+        document.title = '搜索'
+    },
     methods: {
         getlist () {
             this.fn.ajax('get', {action: 'list', pageno: this.page, search: this.value}, this.api.home.list, res => {
@@ -78,6 +81,7 @@ export default {
             this.query()
         },
         query () {
+            this.searchResult = []
             var self = this
             if (this.value === '') {
                 return false
@@ -98,7 +102,7 @@ export default {
                     }
                 }
                 this.getlist()
-                this.value = ''
+                // this.value = ''
                 this.logPopup = false
                 this.result = true
             }

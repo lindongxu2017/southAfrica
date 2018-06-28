@@ -7,7 +7,7 @@
             </div>
             <div class="cash-tips">提现手续费{{ratio}}</div>
             <div class="cash-balance">
-                <div class="cell-title">我的积分</div>
+                <div class="cell-title">我的余额</div>
                 <div class="nums" v-html="total">888.88</div>
             </div>
             <div class="cash-btn">
@@ -40,6 +40,7 @@ export default {
         var userinfo = JSON.parse(localStorage.userinfo)
         this.getRatio()
         this.total = userinfo.j_price
+        document.title = '提现'
     },
     methods: {
         submit () {
@@ -91,6 +92,21 @@ export default {
                     }
                 })
             }
+        },
+        passwordPopup: function () {
+            if (this.passwordPopup) {
+                document.title = '输入密码'
+            } else {
+                document.title = '提现'
+            }
+        }
+    },
+    beforeRouteLeave (to, from, next) {
+        if (this.passwordPopup) {
+            this.passwordPopup = false
+            next(false)
+        } else {
+            next()
         }
     }
 }

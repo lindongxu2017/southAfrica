@@ -58,6 +58,7 @@ export default {
         this.id = this.$route.params.id
         this.getDetail()
         this.getTotal()
+        document.title = '商品详情'
     },
     methods: {
         getDetail () {

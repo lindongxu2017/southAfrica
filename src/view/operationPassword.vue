@@ -36,6 +36,7 @@ export default {
         if (pwd1 === '' || pwd1 === null || pwd1 === 'null') {
             this.isSet = false
         }
+        document.title = '设置密码'
     },
     methods: {
         save () {

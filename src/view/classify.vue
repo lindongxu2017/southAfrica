@@ -57,6 +57,7 @@ export default {
     },
     mounted () {
         this.getClass()
+        document.title = '商品分类'
     },
     methods: {
         getClass () {

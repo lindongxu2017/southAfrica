@@ -30,9 +30,11 @@ export default {
     },
     mounted () {
         this.register = JSON.parse(localStorage.register)
+        document.title = '设置密码'
     },
     methods: {
         login: function () {
+            var self = this
             if (this.password === '') {
                 Dialog.alert({ title: '提示', message: '请输入登录密码！' }).then(() => {})
                 return false
@@ -79,13 +81,16 @@ export default {
                     this.$router.back()
                 } else {
                     this.fn.ajax('post', {username: this.register.username, password: this.password}, this.api.admin.login, result => {
-                        this.fn.ajax('get', {}, this.api.user.info, response => {
-                            localStorage.removeItem('register')
-                            localStorage.userinfo = JSON.stringify(response.data)
-                            this.$router.push({name: 'home'})
-                        })
+                        self.getUserInfo()
                     })
                 }
+            })
+        },
+        getUserInfo () {
+            this.fn.ajax('get', {}, this.api.user.info, response => {
+                localStorage.removeItem('register')
+                localStorage.userinfo = JSON.stringify(response.data)
+                this.$router.push({name: 'home'})
             })
         }
     }

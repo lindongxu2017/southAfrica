@@ -3,7 +3,7 @@
         <div class="container bonus">
             <div class="header">
                 <p class="total" v-html="bonus">888.00</p>
-                <p class="title">我的积分</p>
+                <p class="title">我的余额</p>
                 <div class="bonus-class">
                     <div><p class="nums" v-html="bonuslist.dlprice">333.00</p><p class="name">组织奖</p></div>
                     <div><p class="nums" v-html="bonuslist.dpprice">222.00</p><p class="name">领导奖</p></div>
@@ -11,7 +11,7 @@
                 </div>
             </div>
             <div class="balanceLog">
-                <p class="bonus-logs van-hairline--bottom">积分纪录</p>
+                <p class="bonus-logs van-hairline--bottom">余额纪录</p>
                 <div class="table-heaer van-hairline--bottom">
                     <div>时间</div>
                     <div>类型</div>

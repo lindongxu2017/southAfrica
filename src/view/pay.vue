@@ -25,7 +25,7 @@
                         </div>
                     </div>
                     <van-cell title="商品价格" :value="'￥' + (item.price * item.num) + '.00'" :border="bool"></van-cell>
-                    <van-cell title="返回积分" :value="item.integral" :border="bool"></van-cell>
+                    <van-cell title="返回余额" :value="item.integral" :border="bool"></van-cell>
                     <!-- <van-cell value="总价：￥7920元" :border="bool"></van-cell> -->
                 </van-cell-group>
             </div>
@@ -41,8 +41,12 @@
                         <div class="data-item-value" v-html="'￥' + total">￥5455.00</div>
                     </div>
                     <div class="data-item">
-                        <div class="data-item-label">返回积分</div>
+                        <div class="data-item-label">返回余额</div>
                         <div class="data-item-value" v-html="reward">￥54.00</div>
+                    </div>
+                    <div class="data-item reductible"  v-if="points != ''">
+                        <div class="data-item-label">余额抵扣</div>
+                        <div class="data-item-value" v-html="'-' + points">￥54.00</div>
                     </div>
                     <div class="data-item need-pay">
                         <div class="data-item-label">需支付</div>
@@ -53,6 +57,21 @@
             <div class="pay-btn">
                 <van-button type="default" size="large" @click.native="onSubmit">支付</van-button>
             </div>
+            <p class="points"><span @click="dialogVisibility = true">使用余额抵扣？</span></p>
+            <van-dialog v-model="dialogVisibility" show-cancel-button :before-close="beforeClose">
+                <p class="dialog-title">余额抵扣</p>
+                <div class="dialog-body">
+                    <van-field v-model="points" type="number"
+                    :error-message="points > parseInt(rules.jifen_yu_max) ? '余额抵扣上限不能超过' + rules.jifen_yu_max : ''"
+                    label="余额" placeholder="请输入余额数量"/>
+                    <div class="rules">
+                        <div class="title">规则</div>
+                        <div class="values">
+                            余额抵扣上限<strong v-html="rules.jifen_yu_max"></strong>，当前可用余额<strong v-html="j_price"></strong>
+                        </div>
+                    </div>
+                </div>
+            </van-dialog>
             <!-- 输入密码 -->
             <van-popup v-model="passwordPopup" position="right" class="password">
                 <van-password-input :value="password" info="密码为 6 位数字" @click.native="showKeyboard = true"></van-password-input>
@@ -77,7 +96,11 @@ export default {
             address: {
                 name: '',
                 detail: ''
-            }
+            },
+            points: '',
+            dialogVisibility: false,
+            j_price: 0,
+            rules: {}
         }
     },
     computed: {
@@ -87,6 +110,9 @@ export default {
                 this.list.map(function (obj, index) {
                     sum += parseInt(obj.num) * obj.price
                 })
+                if (this.points !== '') {
+                    sum -= parseInt(this.points)
+                }
                 return sum
             }
             return sum
@@ -121,11 +147,27 @@ export default {
         }, 100)
         this.id = this.$route.params.id
         this.getlist()
+        this.getRules()
+        this.j_price = JSON.parse(localStorage.userinfo).j_price
+        document.title = '支付'
     },
     methods: {
+        getRules () {
+            this.fn.ajax('post', {action: 'getRatio'}, this.api.shopping.ratio, res => {
+                this.rules = res.data
+            })
+        },
         getlist () {
             this.fn.ajax('get', {action: 'detail', id: this.id}, this.api.order.list, res => {
                 this.list = res.data.product_ist
+                if (parseInt(res.data.state) > 0) {
+                    Dialog.alert({
+                        title: '提示',
+                        message: '支付已完成！'
+                    }).then(() => {
+                        this.$router.push({name: 'home'})
+                    })
+                }
             })
         },
         router () {
@@ -159,12 +201,24 @@ export default {
         },
         onDelete () {
             this.password = this.password.slice(0, this.password.length - 1)
+        },
+        beforeClose (action, done) {
+            if (action === 'confirm') {
+                if (this.points > 100) {
+                    return false
+                } else {
+                    setTimeout(done, 1000)
+                }
+            } else {
+                done()
+                this.points = ''
+            }
         }
     },
     watch: {
         password: function () {
             if (this.password.length === 6) {
-                this.fn.ajax('get', {action: 'payment', id: this.id, pwd1: this.password}, this.api.order.list, res => {
+                this.fn.ajax('get', {action: 'payment', id: this.id, pwd1: this.password, input_jifen: this.points}, this.api.order.list, res => {
                     if (res === 'error') {
                         this.password = ''
                         this.passwordPopup = false
@@ -176,9 +230,18 @@ export default {
                             localStorage.payed = 1
                             this.passwordPopup = false
                             this.$router.push({name: 'order', params: {type: 1}})
+                            this.points = ''
+                            this.fn.getUserInfo()
                         })
                     }
                 })
+            }
+        },
+        passwordPopup: function () {
+            if (this.passwordPopup) {
+                document.title = '输入密码'
+            } else {
+                document.title = '支付'
             }
         }
     },
@@ -197,5 +260,45 @@ export default {
 <style type="text/css">
     .pay-wrapper .address {
         min-height: 87px;
+    }
+    .pay .van-dialog__footer--buttons .van-button {
+        background-color: #fff;
+        border-color: #fff;
+    }
+</style>
+
+<style scoped>
+    .pay-btn {
+        margin-bottom: 5px;
+    }
+    .points {
+        font-size: 14px;
+        text-align: right;
+        padding: 0 15px 30px;
+    }
+    .dialog-title {
+        text-align: center;
+        line-height: 45px;
+        border-bottom: 1px solid #e5e5e5;
+    }
+    .dialog-body {
+        padding: 15px 0;
+    }
+    .rules {
+        display: flex;
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    .rules .title {
+        flex: 1;
+        flex-basis: 90px;
+        color: #333;
+    }
+    .rules .values {
+        color: #606266;
+        flex-wrap: wrap;
+    }
+    .pay .all-data .data-wrapper .data-item.reductible .data-item-value {
+        color: #d0021b;
     }
 </style>
