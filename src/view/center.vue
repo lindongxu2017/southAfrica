@@ -43,23 +43,23 @@
                 <div @click="goOrder(3)"><img src="../assets/icon/finish.png"><p v-html="$t('m.completed')">已完成</p></div>
             </div>
         </div>
-        <div class="section">
+        <!-- <div class="section">
             <van-cell-group>
-                <!-- <van-cell class="gray" :title="$t('m.bonus')" :value="$t('m.seeMore')" is-link @click="golog(1)"></van-cell> -->
+                <van-cell class="gray" :title="$t('m.bonus')" :value="$t('m.seeMore')" is-link @click="golog(1)"></van-cell>
             </van-cell-group>
             <p class="balance-num" v-html="userinfo.j_price">888.00</p>
-            <div class="balance van-hairline--top">
-                <div class="van-hairline--right" @click="cash" v-html="$t('m.withdraw')"></div>
-                <div @click="router('transfer')">{{$t('m.transfer')}}</div>
-            </div>
-        </div>
+        </div> -->
         <div class="section">
             <van-cell-group>
                 <van-cell class="gray" :title="$t('m.balance')" :value="$t('m.flowRecords')" is-link @click="golog(2)"></van-cell>
             </van-cell-group>
             <div class="balance-num">
-                <div v-html="userinfo.price">888.00</div>
+                <div v-html="userinfo.j_price">888.00</div>
                 <div class="cash-bth" @click="router('recharge')" v-html="$t('m.recharge')"></div>
+            </div>
+            <div class="balance van-hairline--top">
+                <div class="van-hairline--right" @click="cash" v-html="$t('m.withdraw')"></div>
+                <div @click="router('transfer')">{{$t('m.transfer')}}</div>
             </div>
         </div>
         <div class="section links">

@@ -297,7 +297,19 @@ export default {
             })
         },
         getBaodanlist () {
-            this.fn.ajax('post', {action: 'baodanList'}, this.api.tobe.vip, res => {
+            var type = 1
+            switch (this.type) {
+                case 1:
+                    type = 1
+                    break
+                case 2:
+                    type = 2
+                    break
+                case 3:
+                    type = 3
+                    break
+            }
+            this.fn.ajax('post', {action: 'baodanList', baodan_type: type}, this.api.tobe.vip, res => {
                 // console.log(res)
                 this.baodanlist = res.data
                 this.form.productid = this.baodanlist[0].id
