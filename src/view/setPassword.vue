@@ -48,11 +48,11 @@ export default {
                 return false
             }
             if (this.operationPwd === '') {
-                Dialog.alert({ title: '提示', message: '请输入操作密码！' }).then(() => {})
+                Dialog.alert({ title: '提示', message: '请输入支付密码！' }).then(() => {})
                 return false
             }
             if (this.operationRepwd === '') {
-                Dialog.alert({ title: '提示', message: '请确认操作密码！' }).then(() => {})
+                Dialog.alert({ title: '提示', message: '请确认支付密码！' }).then(() => {})
                 return false
             }
             if (!/^\d{6}$/.test(this.operationPwd)) {
