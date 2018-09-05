@@ -3,7 +3,7 @@
         <div class="search-classify" @click="goSearch">
             <div class="search-input">
                 <van-icon name="search"></van-icon>
-                <span>请输入商品名称</span>
+                <span>{{$t('m.inputTips_1')}}</span>
             </div>
         </div>
         <div class="section">

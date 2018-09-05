@@ -5,27 +5,27 @@
                 <div><input type="number" v-model="value" placeholder="请输入金额"></div>
                 <div>充值金额</div>
             </div> -->
-            <van-field v-model="value" label="充值金额" icon="clear" placeholder="请输入充值金额" @click-icon="value = ''"></van-field>
+            <van-field v-model="value" :label="$t('m.rechargeAmount')" icon="clear" :placeholder="$t('m.inputTips_11')" @click-icon="value = ''"></van-field>
             <div class="picker van-cell van-hairline--bottom" @change="change">
-                <label>支付方式</label>
+                <label>{{$t('m.payWay')}}</label>
                 <select v-model="bankinfo.type">
                     <option v-for="(item, index, key) in paylist" :value="item.id" :key="key" v-html="item.name"></option>
                 </select>
             </div>
             <div class="picker van-cell van-hairline--bottom" v-if="bankinfo.type == 1" @change="change">
-                <label>存款日期</label>
+                <label>{{$t('m.depositDate')}}</label>
                 <div v-html="date" @click="show = true"></div>
             </div>
             <div class="picker van-cell van-hairline--bottom" v-if="bankinfo.type == 1" @change="change">
-                <label>银行名称</label>
+                <label>{{$t('m.bankName2')}}</label>
                 <select v-model="bankinfo.bankId">
                     <option v-for="(item, index, key) in bacnklist" :value="item.id" :key="key" v-html="item.bank"></option>
                 </select>
             </div>
-            <van-field v-model="bankAccount" label="银行账号" icon="clear" placeholder="请输入银行账号" @click-icon="value = ''"></van-field>
-            <van-field v-model="mask" label="备注" icon="clear" placeholder="请输入充值备注" @click-icon="value = ''"></van-field>
+            <van-field v-model="bankAccount" :label="$t('m.bankAccount')" icon="clear" :placeholder="$t('m.inputTips_12')" @click-icon="value = ''"></van-field>
+            <van-field v-model="mask" :label="$t('m.remarks')" icon="clear" :placeholder="$t('m.inputTips_13')" @click-icon="value = ''"></van-field>
             <div class="cash-btn">
-                <van-button type="default" size="large" @click="submit">充值</van-button>
+                <van-button type="default" size="large" @click="submit">{{$t('m.recharge')}}</van-button>
             </div>
             <van-popup v-model="show" position="bottom">
                 <van-datetime-picker v-model="currentDate" @cancel="onCancel" @confirm="onConfirm" type="date"></van-datetime-picker>
@@ -75,7 +75,7 @@ export default {
     methods: {
         submit () {
             if (this.value === '') {
-                Dialog.alert({ title: '提示', message: '请输入金额！' }).then(() => {})
+                Dialog.alert({ title: '提示', message: '请输入充值金额!' }).then(() => {})
                 return false
             }
             if (this.bankAccount === '') {

@@ -1,15 +1,15 @@
 <template>
     <div class="activePvp">
         <img src="../assets/icon/noMore.png">
-        <p>会员暂未激活，激活金额：<span>￥50.00</span></p>
+        <p>{{$t('m.textTips_6')}}：<span>￥50.00</span></p>
         <div class="addressAdd">
             <div class="save-btn">
-                <van-button type="default" size="large" @click="passwordPopup = true">激活会员</van-button>
+                <van-button type="default" size="large" @click="passwordPopup = true">{{$t('m.activateMember')}}</van-button>
             </div>
         </div>
         <!-- 输入密码 -->
         <van-popup v-model="passwordPopup" position="right" class="password">
-            <van-password-input :value="password" info="密码为 6 位数字" @click.native="showKeyboard = true"></van-password-input>
+            <van-password-input :value="password" :info="$t('m.textTips_2')" @click.native="showKeyboard = true"></van-password-input>
             <van-number-keyboard :show="showKeyboard" @input="onInput" @delete="onDelete"></van-number-keyboard>
         </van-popup>
     </div>
@@ -40,6 +40,7 @@ export default {
             this.password = this.password.slice(0, this.password.length - 1)
         },
         pay () {
+            var self = this
             this.fn.ajax('POST', {action: 'pay', pwd1: this.password}, this.api.tobe.pvp, res => {
                 if (res === 'error') {
                     this.password = ''
@@ -47,8 +48,8 @@ export default {
                 } else {
                     this.fn.getUserInfo()
                     Dialog.alert({
-                        title: '提示',
-                        message: '支付成功！'
+                        title: self.$t('m.tip'),
+                        message: self.$t('m.popupTips_3')
                     }).then(() => {
                         this.passwordPopup = false
                         this.$router.push({name: 'pvp', params: {type: 1, id: 3}})

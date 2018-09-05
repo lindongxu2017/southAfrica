@@ -12,8 +12,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
         '/mobile': {
-            // target: 'http://southafrica.qinhantangtop.com',
-            target: 'http://192.168.1.168/admin.php',
+            target: 'http://southafrica.qinhantangtop.com',
+            // target: 'http://192.168.1.168',
             changeOrigin: true
         }
     },

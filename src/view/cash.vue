@@ -2,16 +2,16 @@
     <div class="cash-wrapper">
         <div class="container cash">
             <div class="field-control">
-                <div><input type="number" v-model="value" placeholder="请输入金额"></div>
-                <div>提现金额</div>
+                <div><input type="number" v-model="value" :placeholder="$t('m.inputTips_14')"></div>
+                <div>{{$t('m.withdrawAmount')}}</div>
             </div>
-            <div class="cash-tips">提现手续费{{ratio}}</div>
+            <div class="cash-tips">{{$t('m.withdrawFee')}} {{ratio}}</div>
             <div class="cash-balance">
-                <div class="cell-title">我的余额</div>
+                <div class="cell-title">{{$t('m.myBalance')}}</div>
                 <div class="nums" v-html="total">888.88</div>
             </div>
             <div class="cash-btn">
-                <van-button type="default" size="large" @click="submit">提现</van-button>
+                <van-button type="default" size="large" @click="submit">{{$t('m.withdraw')}}</van-button>
             </div>
         </div>
         <!-- 输入密码 -->

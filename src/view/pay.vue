@@ -7,7 +7,7 @@
                 </van-cell-group>
             </div>
             <div class="order-item" v-for="(item, index, key) in list" :key="key" :class="[index == 0 ? 'no-margin' : '']">
-                <div class="order-cell" @click="router">
+                <div class="order-cell" @click="router(item.id)">
                     <div class="order-cell-img"><img :src="item.proimg"></div>
                     <div class="order-cell-info">
                         <p class="goods-name" v-html="item.productname">商品名称商品名称商品名称</p>
@@ -17,15 +17,15 @@
                 </div>
                 <van-cell-group class="goods-info">
                     <div class="goods-num">
-                        <div class="title">数量</div>
+                        <div class="title">{{$t('m.quantity')}}</div>
                         <div class="btn-group">
                             <!-- <div class="btn-item minus" @click="minus(item.productid, index)">-</div> -->
                             <div v-html="item.num">1</div>
                             <!-- <div class="btn-item plus" @click="plus(item.productid, index)">+</div> -->
                         </div>
                     </div>
-                    <van-cell title="商品价格" :value="'￥' + (item.price * item.num) + '.00'" :border="bool"></van-cell>
-                    <van-cell title="返回余额" :value="item.integral" :border="bool"></van-cell>
+                    <van-cell :title="$t('m.goodsPreice')" :value="'￥' + (item.price * item.num) + '.00'" :border="bool"></van-cell>
+                    <van-cell :title="$t('m.backBalance')" :value="item.integral" :border="bool"></van-cell>
                     <!-- <van-cell value="总价：￥7920元" :border="bool"></van-cell> -->
                 </van-cell-group>
             </div>
@@ -33,48 +33,48 @@
                 <div class="slot"></div>
                 <div class="data-wrapper">
                     <div class="data-item">
-                        <div class="data-item-label">数量</div>
+                        <div class="data-item-label">{{$t('m.quantity')}}</div>
                         <div class="data-item-value" v-html="sum">2</div>
                     </div>
                     <div class="data-item">
-                        <div class="data-item-label">商品金额</div>
+                        <div class="data-item-label">{{$t('m.commodityAmount')}}</div>
                         <div class="data-item-value" v-html="'￥' + total">￥5455.00</div>
                     </div>
                     <div class="data-item">
-                        <div class="data-item-label">返回余额</div>
+                        <div class="data-item-label">{{$t('m.backBalance')}}</div>
                         <div class="data-item-value" v-html="reward">￥54.00</div>
                     </div>
-                    <div class="data-item reductible"  v-if="points != ''">
-                        <div class="data-item-label">余额抵扣</div>
+                    <div class="data-item reductible"  v-if="points != '' && points <= sum">
+                        <div class="data-item-label">{{$t('m.balanceDeduction')}}</div>
                         <div class="data-item-value" v-html="'-' + points">￥54.00</div>
                     </div>
                     <div class="data-item need-pay">
-                        <div class="data-item-label">需支付</div>
+                        <div class="data-item-label">{{$t('m.needPay')}}</div>
                         <div class="data-item-value" v-html="'￥' + total">￥5401.00</div>
                     </div>
                 </div>
             </div>
             <div class="pay-btn">
-                <van-button type="default" size="large" @click.native="onSubmit">支付</van-button>
+                <van-button type="default" size="large" @click.native="onSubmit">{{$t('m.pay')}}</van-button>
             </div>
-            <p class="points"><span @click="dialogVisibility = true">使用余额抵扣？</span></p>
+            <p class="points"><span @click="dialogVisibility = true">{{$t('m.textTips_1')}}</span></p>
             <van-dialog v-model="dialogVisibility" show-cancel-button :before-close="beforeClose">
-                <p class="dialog-title">余额抵扣</p>
+                <p class="dialog-title">{{$t('m.balanceDeduction')}}</p>
                 <div class="dialog-body">
                     <van-field v-model="points" type="number"
-                    :error-message="points > parseInt(rules.jifen_yu_max) ? '余额抵扣上限不能超过' + rules.jifen_yu_max : ''"
-                    label="余额" placeholder="请输入余额数量"/>
+                    :error-message="points > parseInt(rules.jifen_yu_max) ? $t('m.balanceDeductionUpperLimit') + rules.jifen_yu_max : ''"
+                    :label="$t('m.balance')" :placeholder="$t('m.inputTips_21')"/>
                     <div class="rules">
-                        <div class="title">规则</div>
+                        <div class="title">{{$t('m.rules')}}</div>
                         <div class="values">
-                            余额抵扣上限<strong v-html="rules.jifen_yu_max"></strong>，当前可用余额<strong v-html="j_price"></strong>
+                            {{$t('m.balanceDeductionUpperLimit')}}<strong v-html="rules.jifen_yu_max"></strong>，{{$t('m.cuurentAvailableBalance')}}<strong v-html="j_price"></strong>
                         </div>
                     </div>
                 </div>
             </van-dialog>
             <!-- 输入密码 -->
             <van-popup v-model="passwordPopup" position="right" class="password">
-                <van-password-input :value="password" info="密码为 6 位数字" @click.native="showKeyboard = true"></van-password-input>
+                <van-password-input :value="password" :info="$t('m.textTips_2')" @click.native="showKeyboard = true"></van-password-input>
                 <van-number-keyboard :show="showKeyboard" @input="onInput" @delete="onDelete"></van-number-keyboard>
             </van-popup>
         </div>
@@ -110,7 +110,7 @@ export default {
                 this.list.map(function (obj, index) {
                     sum += parseInt(obj.num) * obj.price
                 })
-                if (this.points !== '') {
+                if (this.points !== '' && this.points <= sum) {
                     sum -= parseInt(this.points)
                 }
                 return sum
@@ -158,20 +158,21 @@ export default {
             })
         },
         getlist () {
+            var self = this
             this.fn.ajax('get', {action: 'detail', id: this.id}, this.api.order.list, res => {
                 this.list = res.data.product_ist
                 if (parseInt(res.data.state) > 0) {
                     Dialog.alert({
-                        title: '提示',
-                        message: '支付已完成！'
+                        title: self.$t('m.tip'),
+                        message: self.$t('m.popupTips_4')
                     }).then(() => {
                         this.$router.push({name: 'home'})
                     })
                 }
             })
         },
-        router () {
-            this.$router.push({name: 'goodsDetail', params: {id: this.id}})
+        router (id) {
+            this.$router.push({name: 'goodsDetail', params: {id}})
             // location.href = './goodsDetail.html?id=' + this.id
         },
         goAddress () {
@@ -217,6 +218,7 @@ export default {
     },
     watch: {
         password: function () {
+            var self = this
             if (this.password.length === 6) {
                 this.fn.ajax('get', {action: 'payment', id: this.id, pwd1: this.password, input_jifen: this.points}, this.api.order.list, res => {
                     if (res === 'error') {
@@ -224,8 +226,8 @@ export default {
                         this.passwordPopup = false
                     } else {
                         Dialog.alert({
-                            title: '提示',
-                            message: '支付成功！'
+                            title: self.$t('m.tip'),
+                            message: self.$t('m.popupTips_3')
                         }).then(() => {
                             localStorage.payed = 1
                             this.passwordPopup = false

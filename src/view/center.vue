@@ -12,7 +12,7 @@
                 <div>
                     <van-button size="small" :class="[userinfo.pvp_id == 3 ? 'active' : '']" @click.native="tobe('pvp', 1, userinfo.pvp_id)">PVP</van-button>
                     <van-button size="small" :class="[userinfo.vip_id != 0 ? 'active' : '']" @click.native="tobe('pvp', 2, userinfo.vip_id)">VIP</van-button>
-                    <van-button size="small" :class="[userinfo.shop_status_id == 1 ? 'active' : '']" @click.native="tobe('pvp', 3, userinfo.shop_status_id)" v-html="$t('m.shopowner')">商城会员</van-button>
+                    <van-button size="small" :class="[userinfo.shop_status_id == 1 ? 'active' : '']" @click.native="tobe('pvp', 3, userinfo.shop_status_id)" v-html="$t('m.mallMember')">商城会员</van-button>
                 </div>
             </div>
         </div>
@@ -21,26 +21,26 @@
                 <van-cell title="我的订单" ></van-cell>
             </van-cell-group> -->
             <div class="order-classify">
-                <div @click="goOrder('')"><img src="../assets/icon/all.png"><p v-html="$t('m.all')">全部订单</p></div>
+                <div @click="goOrder('')"><img src="../assets/icon/all.png"><p v-html="$t('m.allOrder')">全部订单</p></div>
                 <div @click="goOrder(0)"><img src="../assets/icon/pending.png">
                     <van-badge-group v-if="parseInt(nums.weizhifu) > 0">
-                        <van-badge :title="$t('m.pendingPay')" :info="parseInt(nums.weizhifu)"></van-badge>
+                        <van-badge :title="$t('m.pendingPayment')" :info="parseInt(nums.weizhifu)"></van-badge>
                     </van-badge-group>
-                    <p v-else v-html="$t('m.pendingPay')" info="10">待付款</p>
+                    <p v-else v-html="$t('m.pendingPayment')" info="10">待付款</p>
                 </div>
                 <div @click="goOrder(1)"><img src="../assets/icon/pendingsend.png">
                     <van-badge-group v-if="parseInt(nums.yizhifu) > 0">
-                        <van-badge :title="$t('m.toSend')" :info="parseInt(nums.yizhifu)"></van-badge>
+                        <van-badge :title="$t('m.pendingDelivery')" :info="parseInt(nums.yizhifu)"></van-badge>
                     </van-badge-group>
-                    <p v-else v-html="$t('m.toSend')">待发货</p>
+                    <p v-else v-html="$t('m.pendingDelivery')">待发货</p>
                 </div>
                 <div @click="goOrder(2)"><img src="../assets/icon/recevied.png">
                     <van-badge-group v-if="parseInt(nums.yifahuo) > 0">
                         <van-badge :title="$t('m.toReceive')" :info="parseInt(nums.yifahuo)"></van-badge>
                     </van-badge-group>
-                    <p v-else v-html="$t('m.toReceive')">待收货</p>
+                    <p v-else v-html="$t('m.pendingReceived')">待收货</p>
                 </div>
-                <div @click="goOrder(3)"><img src="../assets/icon/finish.png"><p v-html="$t('m.completed')">已完成</p></div>
+                <div @click="goOrder(3)"><img src="../assets/icon/finish.png"><p v-html="$t('m.finished')">已完成</p></div>
             </div>
         </div>
         <!-- <div class="section">
@@ -51,7 +51,7 @@
         </div> -->
         <div class="section">
             <van-cell-group>
-                <van-cell class="gray" :title="$t('m.balance')" :value="$t('m.flowRecords')" is-link @click="golog(2)"></van-cell>
+                <van-cell class="gray" :title="$t('m.balance')" :value="$t('m.flowRecord')" is-link @click="golog(2)"></van-cell>
             </van-cell-group>
             <div class="balance-num">
                 <div v-html="userinfo.j_price">888.00</div>
@@ -64,12 +64,12 @@
         </div>
         <div class="section links">
             <van-cell-group>
-                <van-cell :title="$t('m.personalInformation')" is-link to="center/userinfo"></van-cell>
+                <van-cell :title="$t('m.personalInfo')" is-link to="center/userinfo"></van-cell>
                 <van-cell :title="$t('m.shippingAddress')" is-link to="center/addressAddorEdit"></van-cell>
                 <van-collapse v-model="activeNames">
-                    <van-collapse-item :title="$t('m.changePassword')" name="2">
+                    <van-collapse-item :title="$t('m.setPassword')" name="2">
                         <van-cell :title="$t('m.loginPassword')" is-link to="center/loginPassword"></van-cell>
-                        <van-cell :title="$t('m.payPwd')" is-link to="center/operationPassword"></van-cell>
+                        <van-cell :title="$t('m.payPassword')" is-link to="center/operationPassword"></van-cell>
                     </van-collapse-item>
                 </van-collapse>
                 <!-- <van-cell :title="$t('m.operationLog')" is-link class="van-hairline--top" to="center/operationLog"></van-cell> -->

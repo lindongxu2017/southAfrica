@@ -7,23 +7,23 @@
         <div class="container register">
             <div class="tab-wrapper">
                 <div class="switch-tab">
-                    <div class="tab-item" :class="[active == 1 ? 'active' : '']" @click="active=1">注册</div>
-                    <div class="tab-item" :class="[active == 2 ? 'active' : '']" @click="active=2">登录</div>
+                    <div class="tab-item" :class="[active == 1 ? 'active' : '']" @click="active=1">{{$t('m.register')}}</div>
+                    <div class="tab-item" :class="[active == 2 ? 'active' : '']" @click="active=2">{{$t('m.login')}}</div>
                 </div>
                 <div class="tab-content" v-show="active == 1">
                     <div class="field-wrapper">
                         <div class="register-field">
                             <van-cell-group>
-                                <van-field v-model="register.username" :class="[register.username.length > 0 ? 'length' : '']" placeholder="请输入用户名" ></van-field>
-                                <van-field v-model="register.realname" :class="[register.realname.length > 0 ? 'length' : '']" placeholder="请输入真实姓名" ></van-field>
-                                <van-field v-model="register.phone" :class="[register.phone.length > 0 ? 'length' : '']" type="number" placeholder="请输入手机号" ></van-field>
+                                <van-field v-model="register.username" :class="[register.username.length > 0 ? 'length' : '']" :placeholder="$t('m.inputTips_2')" ></van-field>
+                                <van-field v-model="register.realname" :class="[register.realname.length > 0 ? 'length' : '']" :placeholder="$t('m.inputTips_4')" ></van-field>
+                                <van-field v-model="register.phone" :class="[register.phone.length > 0 ? 'length' : '']" type="number" :placeholder="$t('m.inputTips_5')" ></van-field>
                                 <!-- <van-field v-model="register.code" :class="[register.code.length > 0 ? 'length' : '']" placeholder="请输入验证码" >
                                     <div slot="button" v-html="$t('m.getCode')" @click="getCode">获取</div>
                                 </van-field> -->
                             </van-cell-group>
                         </div>
                         <div class="register-btn">
-                            <van-button size="large" @click="goSetPassword">下一步</van-button>
+                            <van-button size="large" @click="goSetPassword">{{$t('m.next')}}</van-button>
                         </div>
                     </div>
                 </div>
@@ -31,14 +31,14 @@
                     <div class="field-wrapper">
                         <div class="register-field">
                             <van-cell-group>
-                                <van-field v-model="login.username" :class="[login.username.length > 0 ? 'length' : '']" placeholder="请输入用户名" ></van-field>
-                                <van-field v-model="login.password" :class="[login.password.length > 0 ? 'length' : '']" type="password" placeholder="请输入密码" ></van-field>
+                                <van-field v-model="login.username" :class="[login.username.length > 0 ? 'length' : '']" :placeholder="$t('m.inputTips_2')" ></van-field>
+                                <van-field v-model="login.password" :class="[login.password.length > 0 ? 'length' : '']" type="password" :placeholder="$t('m.inputTips_3')" ></van-field>
                                 <!-- 暂时隐藏忘记密码入口 -->
                                 <!-- <p class="forgetPassword" @click="goForgetPassword">忘记密码？</p> -->
                             </van-cell-group>
                         </div>
                         <div class="register-btn">
-                            <van-button size="large" @click="signUp">登录</van-button>
+                            <van-button size="large" @click="signUp">{{$t('m.login')}}</van-button>
                         </div>
                     </div>
                 </div>
@@ -100,35 +100,38 @@ export default {
     },
     methods: {
         goSetPassword () {
+            var self = this
             if (this.register.username === '') {
-                Dialog.alert({ title: '提示', message: '请输入用户名！' }).then(() => {})
+                Dialog.alert({ title: self.$t('m.tip'), message: self.$t('m.usernameEmpty') }).then(() => {})
                 return false
             }
             if (this.register.phone === '') {
-                Dialog.alert({ title: '提示', message: '请输入手机号！' }).then(() => {})
+                Dialog.alert({ title: self.$t('m.tip'), message: self.$t('m.phoneEmpty') }).then(() => {})
                 return false
             }
             if (this.register.realname === '') {
-                Dialog.alert({ title: '提示', message: '请输入真实姓名！' }).then(() => {})
+                Dialog.alert({ title: self.$t('m.tip'), message: self.$t('m.realnameEmpty') }).then(() => {})
                 return false
             }
             localStorage.register = JSON.stringify(this.register)
             this.$router.push({name: 'setPassword'})
         },
         getCode () {
+            var self = this
             if (!/^0?(13[0-9]|15[012356789]|17[013678]|18[0-9]|14[57])[0-9]{8}$/.test(this.register.phone)) {
-                Dialog.alert({ title: '提示', message: '请输入正确的手机号码！' }).then(() => {})
+                Dialog.alert({ title: self.$t('m.tip'), message: '请输入正确的手机号码！' }).then(() => {})
             } else {
                 // todo
             }
         },
         signUp () {
+            var self = this
             if (this.login.username === '') {
-                Dialog.alert({ title: '提示', message: '请输入用户名！' }).then(() => {})
+                Dialog.alert({ title: self.$t('m.tip'), message: self.$t('m.usernameEmpty') }).then(() => {})
                 return false
             }
             if (this.login.password === '') {
-                Dialog.alert({ title: '提示', message: '请输入密码！' }).then(() => {})
+                Dialog.alert({ title: self.$t('m.tip'), message: self.$t('m.passwordEmpty') }).then(() => {})
                 return false
             }
             this.fn.ajax('post', {username: this.login.username, password: this.login.password}, this.api.admin.login, response => {

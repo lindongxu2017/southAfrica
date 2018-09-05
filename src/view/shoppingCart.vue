@@ -21,14 +21,14 @@
                     </div>
                     <div class="noMore" v-if="goodslist.length < 1">
                         <img src="../assets/icon/noMore.png">
-                        <p>购物车是空的 ...</p>
+                        <p>{{$t('m.emptyCart')}} ...</p>
                     </div>
                 </div>
             </div>
         </div>
-        <van-submit-bar :price="total" v-if="showTabbar" button-text="结算" :class="[showTabbar? 'showTabbar' : '']" @submit="onSubmit"></van-submit-bar>
+        <van-submit-bar :price="total" v-if="showTabbar" :button-text="$t('m.settlement')" :class="[showTabbar? 'showTabbar' : '']" @submit="onSubmit"></van-submit-bar>
         <van-popup v-model="popupVisibility" position="bottom">
-            <van-picker :columns="columns" value-key="realname" show-toolbar title="选择代理商" @cancel="onCancel" @confirm="onConfirm" @change="onChange" />
+            <van-picker :columns="columns" value-key="realname" show-toolbar :title="$t('m.chooseAgent')" @cancel="onCancel" @confirm="onConfirm" @change="onChange" />
         </van-popup>
     </div>
 </template>

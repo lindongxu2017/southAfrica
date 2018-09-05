@@ -4,56 +4,56 @@
             <div class="notPvp" v-if="!isPvp">
                 <!-- <p class="cell-label">填写上级名称购买身份</p> -->
                 <van-cell-group>
-                    <van-field v-model="form.vip_tjrname" label="推荐人" placeholder=""></van-field>
-                    <van-field v-if="type == 1 || type == 2" v-model="form.vip_prename" label="接点人" placeholder=""></van-field>
+                    <van-field v-model="form.vip_tjrname" :label="$t('m.referrer')" placeholder=""></van-field>
+                    <van-field v-if="type == 1 || type == 2" v-model="form.vip_prename" :label="$t('m.contactPerson')" placeholder=""></van-field>
 
                     <div v-if="type == 1" class="picker van-cell van-hairline--bottom">
-                        <label>性别</label>
+                        <label>{{$t('m.gender')}}</label>
                         <select v-model="pvp.sex">
-                            <option value="男" v-html="'男'"></option>
-                            <option value="女" v-html="'女'"></option>
+                            <option value="男" v-html="$t('m.male')"></option>
+                            <option value="女" v-html="$t('m.female')"></option>
                         </select>
                     </div>
-                    <van-field v-if="type == 1" v-model="pvp.mobile" label="手机号" placeholder=""></van-field>
-                    <van-field v-if="type == 1" v-model="pvp.postcode" label="邮政编码" placeholder=""></van-field>
-                    <van-field v-if="type == 1" v-model="pvp.email" label="邮箱" placeholder=""></van-field>
-                    <van-field v-if="type == 1" v-model="pvp.qq" label="QQ" placeholder=""></van-field>
-                    <van-field v-if="type == 1" v-model="pvp.idcard" label="身份证号" placeholder=""></van-field>
-                    <van-field v-if="type == 1" v-model="pvp.bank" label="开户银行名称" placeholder=""></van-field>
-                    <van-field v-if="type == 1" v-model="pvp.zhanghao" label="银行账号" placeholder=""></van-field>
-                    <van-field v-if="type == 1" v-model="pvp.huzhu" label="户主" placeholder=""></van-field>
+                    <van-field v-if="type == 1" v-model="pvp.mobile" :label="$t('m.phoneNumber')" placeholder=""></van-field>
+                    <van-field v-if="type == 1" v-model="pvp.postcode" :label="$t('m.postalCode')" placeholder=""></van-field>
+                    <van-field v-if="type == 1" v-model="pvp.email" :label="$t('m.email')" placeholder=""></van-field>
+                    <van-field v-if="type == 1" v-model="pvp.qq" :label="$t('m.qq')" placeholder=""></van-field>
+                    <van-field v-if="type == 1" v-model="pvp.idcard" :label="$t('m.idCard')" placeholder=""></van-field>
+                    <van-field v-if="type == 1" v-model="pvp.bank" :label="$t('m.bankName')" placeholder=""></van-field>
+                    <van-field v-if="type == 1" v-model="pvp.zhanghao" :label="$t('m.bankAccount')" placeholder=""></van-field>
+                    <van-field v-if="type == 1" v-model="pvp.huzhu" :label="$t('m.host')" placeholder=""></van-field>
 
                     <div class="picker van-cell van-hairline--bottom">
-                        <label>购买等级</label>
+                        <label>{{$t('m.purchaseLevel')}}</label>
                         <select v-model="form.rank" @change="getRankPrice">
                             <option v-for="(item, index, key) in rankList" :value="item.id" :key="key" v-html="item.rank_name"></option>
                         </select>
                     </div>
                     <div class="picker van-cell van-hairline--bottom">
-                        <label>报单产品</label>
+                        <label>{{$t('m.reportProduct')}}</label>
                         <select v-model="form.productid" @change="getRankPrice">
                             <option v-for="(item, index, key) in baodanlist" :value="item.id" :key="key" v-html="item.productname"></option>
                         </select>
                     </div>
                     <div class="picker van-cell van-hairline--bottom">
-                        <label>代理商</label>
+                        <label>{{$t('m.agent')}}</label>
                         <select v-model="form.agentid" @change="checkAgentid">
                             <option v-for="(item, index, key) in agentlist" :value="item.id" :key="key" v-html="item.username"></option>
                         </select>
                     </div>
                 </van-cell-group>
-                <van-submit-bar v-if="type != 1" :price="form.rankPrice" :button-text="isShopkeeper?'提交':'支付'" @submit="onSubmit"/>
+                <van-submit-bar v-if="type != 1" :price="form.rankPrice" :button-text="isShopkeeper?$t('m.submit'):$t('m.pay')" @submit="onSubmit"/>
                 <div class="addressAdd" v-if="type == 1">
                     <div class="save-btn">
-                        <van-button type="default" size="large" @click="save">注册会员</van-button>
+                        <van-button type="default" size="large" @click="save">{{$t('m.registerMember')}}</van-button>
                     </div>
                 </div>
             </div>
             <div class="isPvp" v-if="isPvp">
                 <div class="cell-area">
                     <p class="cell-value level">
-                        <span v-if="type==2">会员等级： {{vip_level}} </span>
-                        <span v-if="type==3">会员等级： {{store_level}} </span>
+                        <span v-if="type==2">{{$t('m.memberLevel')}}： {{vip_level}} </span>
+                        <span v-if="type==3">{{$t('m.memberLevel')}}： {{store_level}} </span>
                         <img v-if="is_level" @click.stop="levelup" src="../assets/icon/levelup.png">
                     </p>
                     <!-- <p class="title-name">余额记录：</p> -->
@@ -63,7 +63,7 @@
                     </p>
                 </div>
                 <van-tabs v-model="active">
-                    <van-tab title="已激活下级列表">
+                    <van-tab :title="$t('m.activateList')">
                         <div class="pvp-list" v-if="active == 0">
                             <van-list v-model="loading" :finished="finished" @load="onLoad">
                                 <div class="pvp-list-item" v-for="(item, key) in memberlist[0]" :key="key">
@@ -73,11 +73,11 @@
                             </van-list>
                             <div class="noMore" v-if="total[0] == 0">
                                 <img src="../assets/icon/noMore.png">
-                                <p>暂无数据...</p>
+                                <p>{{$t('m.noData')}}</p>
                             </div>
                         </div>
                     </van-tab>
-                    <van-tab title="未激活下级列表" v-if="type == 1">
+                    <van-tab :title="$t('m.inactivatedList')" v-if="type == 1">
                         <div class="pvp-list" v-if="active == 1">
                             <van-list v-model="loading" :finished="finished" @load="onLoad">
                                 <div class="pvp-list-item" v-for="(item, key) in memberlist[1]" :key="key">
@@ -87,7 +87,7 @@
                             </van-list>
                             <div class="noMore" v-if="total[1] == 0">
                                 <img src="../assets/icon/noMore.png">
-                                <p>暂无数据...</p>
+                                <p>{{$t('m.noData')}}</p>
                             </div>
                         </div>
                     </van-tab>
@@ -197,6 +197,9 @@ export default {
         }
         document.title = title
         this.getAgentlist()
+        // if (localStorage.lang === 'en-US') {
+        //     this.lang_en = true
+        // }
     },
     methods: {
         getlevel () {
@@ -361,6 +364,7 @@ export default {
             this.finished = false
         },
         password: function () {
+            var self = this
             var data = {}
             var api = ''
             switch (this.type) {
@@ -392,8 +396,8 @@ export default {
                         this.passwordPopup = false
                     } else {
                         Dialog.alert({
-                            title: '提示',
-                            message: '支付成功！'
+                            title: self.$t('m.tip'),
+                            message: self.$t('m.popupTips_3')
                         }).then(() => {
                             if (this.type === 3) {
                                 this.$router.replace({name: 'status', params: {type: 3}})
@@ -433,6 +437,14 @@ export default {
         position: static;
         padding: 10% 25px;
     }
+    /*.pvp-wrapper .van-tab {
+        line-height: 1.5;
+    }
+    .pvp-wrapper .van-tab span {
+        overflow: auto;
+        white-space: normal;
+        text-overflow: inherit;
+    }*/
 </style>
 
 <style type="text/css" scoped>

@@ -5,14 +5,14 @@
             <div class="search-mask" v-if="logPopup">
                 <div class="search-log">
                     <div class="clear-logs" v-if="loglist.length">
-                        <div>最近搜索</div>
-                        <div @click="clearLogs">清除</div>
+                        <div>{{$t('m.recentSearch')}}</div>
+                        <div @click="clearLogs">{{$t('m.clear')}}</div>
                     </div>
                     <van-cell-swipe :right-width="42" v-for="(item, index) in loglist" :key="index" @click.native="logQuery(item.title)">
                         <van-cell-group>
                             <van-cell :title="item.title"></van-cell>
                         </van-cell-group>
-                        <span slot="right" @click="deleteLogs(index)">删除</span>
+                        <span slot="right" @click="deleteLogs(index)">{{$t('m.del')}}</span>
                     </van-cell-swipe>
                 </div>
             </div>
@@ -30,9 +30,9 @@
                 </van-list>
             </div>
             <!-- 搜索框 -->
-            <van-search v-model="value" placeholder="请输入商品名称" autofocus :show-action="logPopup || result" @focus="focus" @keyup.13="query">
-                <div slot="action" v-if="value!= ''" @click="query">搜索</div>
-                <div slot="action" v-if="value== ''" @click="cancel">取消</div>
+            <van-search v-model="value" :placeholder="$t('m.inputTips_1')" autofocus :show-action="logPopup || result" @focus="focus" @keyup.13="query">
+                <div slot="action" v-if="value!= ''" @click="query">{{$t('m.search')}}</div>
+                <div slot="action" v-if="value== ''" @click="cancel">{{$t('m.cancle')}}</div>
             </van-search>
         </div>
     </div>
@@ -162,5 +162,8 @@ export default {
 
     .searchPage-wrapper .van-cell-swipe__right span {
         color: #fff;
+    }
+    .searchPage-wrapper .van-search__input {
+        line-height: inherit;
     }
 </style>

@@ -3,7 +3,7 @@
         <div class="main index">
             <div class="search-wrapper" @click="goSearch">
                 <van-icon name="search"></van-icon>
-                <span>请输入商品名称</span>
+                <span>{{$t('m.inputTips_1')}}</span>
             </div>
             <van-swipe :autoplay="3000">
                 <van-swipe-item v-for="(item, index, key) in swiperlist" :key="key"><img :src="item.proimg"></van-swipe-item>
@@ -99,4 +99,8 @@ export default {
     .product-info p {
         width: 100%;
     }
+    /*.home .search-wrapper span,
+    .home .search-wrapper .van-icon {
+        vertical-align: baseline;
+    }*/
 </style>

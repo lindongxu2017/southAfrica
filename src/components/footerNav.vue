@@ -8,7 +8,7 @@
                 </template>
             </van-tabbar-item>
             <van-tabbar-item icon="shop" @click="routeTo('classify')">
-                <span v-html="$t('m.classification')">分类</span>
+                <span v-html="$t('m.classsify')">分类</span>
                 <template slot="icon" slot-scope="props">
                     <img :src="props.active ? icon.active_2 : icon.normal_2" />
                 </template>
@@ -20,7 +20,7 @@
                 </template>
             </van-tabbar-item>
             <van-tabbar-item icon="chat" @click="routeTo('center')">
-                <span v-html="$t('m.personalCenter')">个人中心</span>
+                <span v-html="$t('m.center')">个人中心</span>
                 <template slot="icon" slot-scope="props">
                     <img :src="props.active ? icon.active_4 : icon.normal_4" />
                 </template>
@@ -86,3 +86,9 @@ export default {
     }
 }
 </script>
+
+<style type="text/css">
+    .footerNav .van-tabbar-item__text {
+        text-align: center;
+    }
+</style>

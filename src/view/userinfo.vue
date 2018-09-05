@@ -11,18 +11,18 @@
                 </div>
             </div>
             <van-cell-group>
-                <van-cell title="用户名" :value="userinfo.username"></van-cell>
-                <van-cell title="注册时间" :value="userinfo.regtime"></van-cell>
+                <van-cell :title="$t('m.username')" :value="userinfo.username"></van-cell>
+                <van-cell :title="$t('m.registerTime')" :value="userinfo.regtime"></van-cell>
 
-                <van-cell title="PVP推荐人" :value="userinfo.tjrname || '无'"></van-cell>
-                <van-cell title="PVP接点人" :value="userinfo.prename || '无'"></van-cell>
+                <van-cell :title="'PVP' + $t('m.referrer')" :value="userinfo.tjrname || $t('m.none')"></van-cell>
+                <van-cell :title="'PVP' + $t('m.contactPerson')" :value="userinfo.prename || $t('m.none')"></van-cell>
 
-                <van-cell title="VIP推荐人" :value="userinfo.vip_tjrname || '无'"></van-cell>
-                <van-cell title="VIP接点人" :value="userinfo.vip_prename || '无'"></van-cell>
+                <van-cell :title="'VIP' + $t('m.referrer')" :value="userinfo.vip_tjrname || $t('m.none')"></van-cell>
+                <van-cell :title="'VIP' + $t('m.contactPerson')" :value="userinfo.vip_prename || $t('m.none')"></van-cell>
 
-                <van-cell title="商城推荐人" :value="userinfo.shop_tjrname || '无'"></van-cell>
+                <van-cell :title="$t('m.mallReferrer')" :value="userinfo.shop_tjrname || $t('m.none')"></van-cell>
 
-                <van-cell title="位置" :value="address"></van-cell>
+                <van-cell :title="$t('m.location')" :value="address"></van-cell>
                 <!-- <van-cell title="报单中心" value="xxx中心"></van-cell> -->
             </van-cell-group>
         </div>

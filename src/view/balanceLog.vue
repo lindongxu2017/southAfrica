@@ -2,9 +2,9 @@
     <div class="balanceLog-wrapper">
         <div class="container balanceLog">
             <div class="table-heaer van-hairline--bottom">
-                <div>时间</div>
-                <div>类型</div>
-                <div>金额</div>
+                <div>{{$t('m.time')}}</div>
+                <div>{{$t('m.types')}}</div>
+                <div>{{$t('m.amount')}}</div>
             </div>
             <div class="table-body">
                 <van-list v-model="loading" :finished="finished" @load="onLoad">
@@ -15,7 +15,7 @@
                         <div v-else v-html="'-￥' + item.money">￥100.00</div>
                     </div>
                 </van-list>
-                <p class="noMore" v-if="finished">暂无更多...</p>
+                <p class="noMore" v-if="finished">{{$t('m.noMore')}}</p>
             </div>
         </div>
     </div>
@@ -77,5 +77,17 @@ export default {
 <style type="text/css">
     .balanceLog-wrapper .noMore {
         margin-top: 10%;
+    }
+    .balanceLog-wrapper .table-heaer {
+        display: flex;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .balanceLog-wrapper .table-heaer > div {
+        flex: 1;
+        line-height: 1.3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>

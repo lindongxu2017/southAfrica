@@ -2,26 +2,26 @@
     <div class="addressAddorEdit">
         <div class="container addressAdd">
             <van-cell-group class="addressInfo">
-                <van-field v-model="addressInfo.name" label="收件人" icon="clear" placeholder="请输入收件人姓名" @click-icon="username = ''"></van-field>
-                <van-field v-model="addressInfo.phone" label="联系电话" icon="clear" placeholder="请输入收件人电话" @click-icon="username = ''"></van-field>
+                <van-field v-model="addressInfo.name" :label="$t('m.addressee')" icon="clear" :placeholder="$t('m.inputTips_18')" @click-icon="username = ''"></van-field>
+                <van-field v-model="addressInfo.phone" :label="$t('m.contactNumber')" icon="clear" :placeholder="$t('m.inputTips_19')" @click-icon="username = ''"></van-field>
                 <!-- <van-field v-model="addressInfo.province" label="省份" icon="clear" placeholder="请输入省份名称" @click-icon="username = ''"></van-field> -->
                 <!-- <van-field v-model="addressInfo.city" type="" label="城市" icon="clear" placeholder="请输入城市名称" @click-icon="username = ''"></van-field> -->
                 <div class="picker van-cell van-hairline--bottom" @change="change">
-                    <label>省份</label>
+                    <label>{{$t('m.province')}}</label>
                     <select v-model="addressInfo.province">
                         <option v-for="(item, index, key) in province" :value="item.provinceID" :key="key" v-html="item.province"></option>
                     </select>
                 </div>
                 <div class="picker van-cell van-hairline--bottom">
-                    <label>城市</label>
+                    <label>{{$t('m.city')}}</label>
                     <select v-model="addressInfo.city">
                         <option v-for="(item, index, key) in city" :value="item.cityID" :key="key" v-html="item.city"></option>
                     </select>
                 </div>
-                <van-field v-model="addressInfo.more" label="详细地址" icon="clear" placeholder="请输入详细地址" @click-icon="username = ''"></van-field>
+                <van-field v-model="addressInfo.more" :label="$t('m.detailedAddress')" icon="clear" :placeholder="$t('m.inputTips_20')" @click-icon="username = ''"></van-field>
             </van-cell-group>
             <div class="save-btn">
-                <van-button type="default" size="large" @click="submit">保存</van-button>
+                <van-button type="default" size="large" @click="submit">{{$t('m.save')}}</van-button>
             </div>
         </div>
     </div>

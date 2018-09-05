@@ -1,13 +1,13 @@
 <template>
     <div class="order-wrapper">
-        <div class="container order">
+        <div class="container order" :class="[lang_en?'en':'']">
             <van-tabs v-model="active">
                 <van-tab v-for="(item, indexF, key) in list" :key="key" :title="item.title">
                     <div class="order-list" v-if="indexF == active">
                         <van-list v-model="loading" :finished="finished" :offset="offset" @load="onLoad(indexF)">
                             <div class="order-item" v-for="(obj, index1, key) in item.list" :key="key">
                                 <div class="order-num-status">
-                                    <div>订单号：<span v-html="obj.id"></span></div>
+                                    <div>{{$t('m.orderNumber')}}：<span v-html="obj.id"></span></div>
                                     <div :class="{'pending-pay': obj.state == 0, 'confirm': obj.state == 1}" >
                                         <span v-html="obj.state_name"></span>
                                         <img v-if="obj.state == 0" src="../assets/icon/pendingPay.png" width="16">
@@ -15,10 +15,10 @@
                                     </div>
                                 </div>
                                 <div class="order-num-status" v-if="obj.log_no" style="padding-top: 10px">
-                                    <div>快递单号：<span v-html="obj.log_no"></span></div>
+                                    <div>{{$t('m.trackingNumber')}}：<span v-html="obj.log_no"></span></div>
                                 </div>
                                 <div class="order-num-status" v-if="obj.log_no" style="padding-top: 10px">
-                                    <div>物流公司：<span v-html="obj.company"></span></div>
+                                    <div>{{$t('m.logisticsCompany')}}：<span v-html="obj.company"></span></div>
                                 </div>
                                 <div v-for="(product, index, key) in obj.product_ist" :key="key" @click="goDetail(product.productid)">
                                     <div class="order-info">
@@ -33,16 +33,16 @@
                                     </div>
                                 </div>
                                 <div class="order-btn van-hairline--top pendingPay" v-if="obj.state == 0">
-                                    <div class="van-hairline--right" @click.stop="deleteOrder(indexF, index1, obj.id)">删除订单</div>
-                                    <div @click.stop="goPay(obj.id)">支付</div>
+                                    <div class="van-hairline--right" @click.stop="deleteOrder(indexF, index1, obj.id)">{{$t('m.deleteOrder')}}</div>
+                                    <div @click.stop="goPay(obj.id)">{{$t('m.pay')}}</div>
                                 </div>
-                                <div class="order-btn van-hairline--top confirm" v-if="obj.state == 2" @click.stop="comfirm(index1, obj.id)">确认收货</div>
+                                <div class="order-btn van-hairline--top confirm" v-if="obj.state == 2" @click.stop="comfirm(index1, obj.id)">{{$t('m.confirmReceipt')}}</div>
                             </div>
                         </van-list>
                     </div>
                     <div class="noMore" v-if="total[indexF] == 0">
                         <img src="../assets/icon/noMore.png">
-                        <p>暂无订单...</p>
+                        <p>{{$t('m.noOrder')}}</p>
                     </div>
                 </van-tab>
             </van-tabs>
@@ -58,26 +58,37 @@ export default {
         return {
             active: 0,
             // 全部
-            list: [
-                { title: '所有订单', list: [] },
-                { title: '待付款', list: [] },
-                { title: '待发货', list: [] },
-                { title: '待收货', list: [] },
-                { title: '已完成', list: [] }
-            ],
+            list: [],
             loading: false,
             finished: false,
             total: [1, 1, 1, 1, 1],
             page: [1, 1, 1, 1, 1],
             offset: 100,
-            routeName: ''
+            routeName: '',
+            lang_en: false
         }
     },
     mounted () {
-        if (this.$route.params.type !== null) {
-            this.active = this.$route.params.type + 1
+        if (localStorage.lang === 'en-US') {
+            this.lang_en = true
         }
         document.title = '订单列表'
+        // console.log(window.lang)
+        setTimeout(() => {
+            // console.log(window.lang)
+            this.list = [
+                { title: window.lang('m.allOrder'), list: [] },
+                { title: window.lang('m.pendingPayment'), list: [] },
+                { title: window.lang('m.pendingDelivery'), list: [] },
+                { title: window.lang('m.pendingReceived'), list: [] },
+                { title: window.lang('m.finished'), list: [] }
+            ]
+            this.$nextTick(() => {
+                if (this.$route.params.type >= 0) {
+                    this.active = this.$route.params.type + 1
+                }
+            })
+        })
     },
     methods: {
         getlist () {
@@ -102,9 +113,10 @@ export default {
             })
         },
         deleteOrder (index1, index2, id) {
+            var self = this
             Dialog.confirm({
-                title: '提示',
-                message: '是否删除订单？'
+                title: self.$t('m.tip'),
+                message: self.$t('m.isDeleteOrder')
             }).then(() => {
                 // on confirm
                 this.fn.ajax('get', {action: 'del', id}, this.api.order.list, res => {
@@ -140,6 +152,16 @@ export default {
     }
 }
 </script>
+
+<style type="text/css">
+    .order-wrapper .en .van-tabs__nav--line {
+        display: block;
+        white-space: nowrap;
+    }
+    .order-wrapper .en .van-tab {
+        display: inline-block;
+    }
+</style>
 
 <style type="text/css" scoped>
     * {

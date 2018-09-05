@@ -12,7 +12,6 @@ import 'vant/lib/vant-css/index.css'
 import './css/main.css'
 import './css/vant-reset.css'
 import './css/response.css'
-
 import {api} from './js/api.js'
 import {fn} from './js/main.js'
 

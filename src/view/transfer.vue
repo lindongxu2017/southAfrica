@@ -2,8 +2,8 @@
     <div class="transfer-wrapper">
         <div class="container cash recharge transfer">
             <div class="field-control">
-                <div><input type="number" v-model="value" placeholder="请输入金额"></div>
-                <div>转账金额</div>
+                <div><input type="number" v-model="value" :placeholder="$t('m.inputTips_14')"></div>
+                <div>{{$t('m.transferAmount')}}</div>
             </div>
             <!-- <div class="select">
                 <div class="select-label">转账类型</div>
@@ -15,15 +15,15 @@
                 </div>
             </div> -->
             <div class="transfer-account">
-                <div class="title">转入人会员编号</div>
+                <div class="title">{{$t('m.transferMemberNumber')}}</div>
                 <input type="text" v-model="account">
             </div>
             <div class="cash-balance">
-                <div class="cell-title">我的余额</div>
+                <div class="cell-title">{{$t('m.myBalance')}}</div>
                 <div class="nums" v-html="total">888.88</div>
             </div>
             <div class="cash-btn">
-                <van-button type="default" size="large" @click="submit">转账</van-button>
+                <van-button type="default" size="large" @click="submit">{{$t('m.transfer')}}</van-button>
             </div>
         </div>
     </div>

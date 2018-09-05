@@ -2,17 +2,17 @@
     <div class="operationPassword-wrapper">
         <div class="container operationPassword">
             <van-cell-group v-if="!isSet">
-                <van-field v-model="password" type="password" label="新密码" required placeholder="请输入新密码"></van-field>
-                <van-field v-model="repassword" type="password" label="确认新密码" required placeholder="请确认新密码"></van-field>
+                <van-field v-model="password" type="password" :label="$t('m.newPassword')" required :placeholder="$t('m.inputTips_15')"></van-field>
+                <van-field v-model="repassword" type="password" :label="$t('m.newPassword')" required :placeholder="$t('m.inputTips_16')"></van-field>
             </van-cell-group>
             <van-cell-group v-if="isSet">
                 <!-- <van-field v-model="oldpassword" type="password" label="旧密码" required placeholder="请输入旧密码"></van-field> -->
-                <van-field v-model="password" type="password" label="新密码" required placeholder="请输入新密码"></van-field>
-                <van-field v-model="repassword" type="password" label="确认新密码" required placeholder="请确认新密码"></van-field>
+                <van-field v-model="password" type="password" :label="$t('m.newPassword')" required :placeholder="$t('m.inputTips_15')"></van-field>
+                <van-field v-model="repassword" type="password" :label="$t('m.newPassword')" required :placeholder="$t('m.inputTips_16')"></van-field>
             </van-cell-group>
             <div class="addressAdd">
                 <div class="save-btn">
-                    <van-button type="default" size="large" @click="save">保存</van-button>
+                    <van-button type="default" size="large" @click="save">{{$t('m.save')}}</van-button>
                 </div>
             </div>
         </div>
@@ -49,7 +49,7 @@ export default {
                 return false
             }
             if (this.password !== this.repassword) {
-                Dialog.alert({ title: '提示', message: '重复密码不一致！' }).then(() => {})
+                Dialog.alert({ title: '提示', message: '密码不一致！' }).then(() => {})
                 return false
             }
             if (!/^\d{6}$/.test(this.password)) {
