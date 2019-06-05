@@ -144,6 +144,9 @@ export default {
         },
         switchLan (type) {
             this.lanActive = type
+            this.fn.ajax('POST', {lang: type === 0 ? 'zh_en' : 'zh_cn'}, '/mobile/api/setting.php?action=language_switch', res => {
+                console.log(res)
+            })
             if (this.lang === 'en-US') {
                 this.lang = 'zh-CN'
                 // UI框架组件国际化
